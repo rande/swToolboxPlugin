@@ -42,18 +42,19 @@ abstract class swDoctrineDatagrid extends sfForm
     parent::__construct(array(), $options, $CSRFSecret);
 
     // add page
-    $page = (isset($options['page']) ? $options['page'] : null);
-    $this->addFilter('_page', $page, new sfWidgetFormInputHidden, new sfValidatorPass);
-    $params['_page'] = $page;
+    //$page = (isset($options['page']) ? $options['page'] : 1);
+    //$this->addFilter('page', $page, new sfWidgetFormInputHidden, new sfValidatorPass);
     
-    // add sort option
+    // add sort option 
+    /* DO IMPLEMENTED YET
     $order_by = (isset($options['order_by']) ? $options['order_by'] : null);
-    $this->addFilter('_order_by', $page, new sfWidgetFormInputHidden, new sfValidatorPass);
-    $params['_order_by'] = $page;
+    $this->addFilter('order_by', $order_by, new sfWidgetFormInputHidden, new sfValidatorPass);
+    $params['order_by'] = $order_by;
     
-    $order_by = (isset($options['order_field']) ? $options['order_field'] : null);
-    $this->addFilter('_order_field', $page, new sfWidgetFormInputHidden, new sfValidatorPass);
-    $params['_order_field'] = $page;
+    $order_field = (isset($options['order_field']) ? $options['order_field'] : null);
+    $this->addFilter('order_field', $order_field, new sfWidgetFormInputHidden, new sfValidatorPass);
+    $params['order_field'] = $order_field;
+    */
     
     // init values
     $defaults = $this->prepareDefaultValues($params);
@@ -96,9 +97,7 @@ abstract class swDoctrineDatagrid extends sfForm
       $session_values = $params = array();
     }
 
-    $filters = array();
-
-    $base = count($params) <= 1 ? $session_values : $params;
+    $base = count($params) == 0 ? $session_values : $params;
     
     foreach($this->filters as $name => $value)
     {
@@ -139,7 +138,7 @@ abstract class swDoctrineDatagrid extends sfForm
   public function preparePager()
   {
     $this->pager = new sfDoctrinePager($this->getModelName());
-    $this->pager->setPage($this->getValue('page'));
+    $this->pager->setPage($this->getOption('page'));
     $query = $this->pager->getQuery();
     $this->pager->setQuery($this->buildQuery($query));
     
