@@ -41,9 +41,14 @@ class swWidgetFormDoctrineInputCheckboxGroup extends sfWidgetFormDoctrineSelectM
       $choices = $choices->call();
     }
     
-    $attributes['name'] = $name;
-
-    return $this->renderContentTag('div', "\n".implode("\n", $this->getInputForCheckboxGroup($value, $choices, $name))."\n", $attributes);
+    $separator = "\n";
+    if(array_key_exists('separator', $attributes))
+    {
+      $separator = $attributes['separator']."\n";
+      unset($attributes['separator']);
+    }
+    
+    return $this->renderContentTag('div', "\n".implode($separator, $this->getInputForCheckboxGroup($value, $choices, $name))."\n", $attributes);
   }
 
   /**
