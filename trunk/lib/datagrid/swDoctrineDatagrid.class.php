@@ -46,7 +46,7 @@ abstract class swDoctrineDatagrid extends sfForm
     //$this->addFilter('page', $page, new sfWidgetFormInputHidden, new sfValidatorPass);
     
     // add sort option 
-    /* DO IMPLEMENTED YET
+    /* NO IMPLEMENTED YET
     $order_by = (isset($options['order_by']) ? $options['order_by'] : null);
     $this->addFilter('order_by', $order_by, new sfWidgetFormInputHidden, new sfValidatorPass);
     $params['order_by'] = $order_by;
@@ -77,6 +77,8 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->widgetSchema->addFormFormatter('swSchemaFormatterDatagrid', new swSchemaFormatterDatagrid($this->widgetSchema));
     $this->widgetSchema->setFormFormatterName('swSchemaFormatterDatagrid');
     $this->widgetSchema->setNameFormat('filters[%s]');
+    
+    $this->widgetSchema->getFormFormatter()->setTranslationCatalogue('datagrid');
     
     $this->setupDatagrid();
   }
