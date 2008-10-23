@@ -35,7 +35,7 @@
 abstract class swDoctrineDatagrid extends sfForm
 {
   protected $pager;
-  protected $filters;
+  protected $filters = array();
   
   public function __construct($params = array(), $options = array(), $CSRFSecret = null)
   {
@@ -100,6 +100,8 @@ abstract class swDoctrineDatagrid extends sfForm
     }
 
     $base = count($params) == 0 ? $session_values : $params;
+    
+    $filters = array();
     
     foreach($this->filters as $name => $value)
     {
