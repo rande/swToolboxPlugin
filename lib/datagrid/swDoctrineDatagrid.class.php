@@ -93,7 +93,7 @@ abstract class swDoctrineDatagrid extends sfForm
   {
     $session_values = $this->getStoredValues();
 
-    if(array_key_exists('reset', $params))
+    if(array_key_exists('reset', $params) || $this->getOption('store', true) == false)
     {
       $reset = true;
       $session_values = $params = array();
@@ -113,11 +113,23 @@ abstract class swDoctrineDatagrid extends sfForm
 
   public function getStoredValues()
   {
+    if($this->getOption('store', true) == false)
+    {
+      
+      return array();
+    }
+    
     return sfContext::getInstance()->getUser()->getAttribute('filters', array(), get_class($this));
   }
 
   public function setStoredValues($values)
   {
+    if($this->getOption('store', true) == false)
+    {
+      
+      return ;
+    }
+    
     sfContext::getInstance()->getUser()->setAttribute('filters', $values, get_class($this));
   }
 
