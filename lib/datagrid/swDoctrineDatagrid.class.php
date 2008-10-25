@@ -93,7 +93,7 @@ abstract class swDoctrineDatagrid extends sfForm
   {
     $session_values = $this->getStoredValues();
 
-    if(array_key_exists('reset', $params) || $this->getOption('store', true) == false)
+    if(array_key_exists('reset', $params))
     {
       $reset = true;
       $session_values = $params = array();
