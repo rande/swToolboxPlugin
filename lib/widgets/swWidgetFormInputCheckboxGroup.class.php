@@ -23,15 +23,15 @@
  */
 
 /**
- * swWidgetFormDoctrineInputCheckboxGroup represents a group of checkbox HTML tag 
- * for a model where you can select multiple values.
+ * swWidgetFormInputCheckboxGroup represents a group of checkbox HTML tag 
+ * for a array/callback where you can select multiple values.
  *
  * @package    swToolboxPlugin
  * @subpackage widgets
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swWidgetFormDoctrineInputCheckboxGroup extends sfWidgetFormDoctrineSelectMany
+class swWidgetFormInputCheckboxGroup extends sfWidgetFormSelectMany
 {
   public function render($name, $value = null, $attributes = array(), $errors = array())
   {
