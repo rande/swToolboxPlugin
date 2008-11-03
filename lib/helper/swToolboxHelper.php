@@ -22,3 +22,19 @@
  * <http://www.soleoweb.com>.
  */
 
+/**
+ * Set the title of the current page
+ *   usage : <h1><?php echo sw_t('Blog Posts') ?></h1>
+ * 
+ * return string the title provided
+ */
+function sw_t($title)
+{
+
+  if(sfConfig::get('app_swToolbox_page_title_enabled', true))
+  {
+    sfContext::getInstance()->getResponse()->setTitle($title.sfConfig::get('app_swToolbox_page_title_suffix', ''));
+  }
+  
+  return $title;
+}
