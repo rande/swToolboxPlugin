@@ -1,0 +1,16 @@
+swToolboxHelper
+===============
+
+
+sw_t($title)
+------------
+
+  * define the title of the current page
+  * custom configuration : edit and add these lines to your app.yml
+  
+      [yml]
+      swToolbox:
+        page_title_enabled: true
+        page_title_suffix: " - Thomas Rabaix"
+  
+  
