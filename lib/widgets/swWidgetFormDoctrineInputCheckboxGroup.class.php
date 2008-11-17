@@ -75,7 +75,6 @@ class swWidgetFormDoctrineInputCheckboxGroup extends sfWidgetFormDoctrineSelectM
       }
 
       $attributes['type'] = 'checkbox';
-      $attributes['value'] = $key;
       $attributes['name'] = $name.'[]';
 
       $options[] = $this->renderContentTag('input', self::escapeOnce($option), $attributes);
