@@ -33,6 +33,21 @@
  */
 class swWidgetFormInputCheckboxGroup extends sfWidgetFormSelectMany
 {
+
+  /**
+   * @param array $options     An array of options
+   * @param array $attributes  An array of default HTML attributes
+   *
+   * @see sfWidgetFormSelect
+   */
+  protected function configure($options = array(), $attributes = array())
+  {
+    parent::configure($options, $attributes);
+
+    $this->addOption('clone_callable', true);
+    
+  }
+  
   public function render($name, $value = null, $attributes = array(), $errors = array())
   {
     $choices = $this->getOption('choices');
@@ -65,18 +80,22 @@ class swWidgetFormInputCheckboxGroup extends sfWidgetFormSelectMany
     $mainAttributes = $this->attributes;
     $this->attributes = array();
 
+    
     $options = array();
     foreach ($choices as $key => $option)
     {
-      $attributes = array('value' => self::escapeOnce($key));
+      $attributes = array(
+        'value' => self::escapeOnce($key),
+        'type'  => 'checkbox',
+        'name'  => $name.'[]'
+      
+      );
+      
+      
       if ((is_array($value) && in_array(strval($key), $value)) || strval($key) == strval($value))
       {
         $attributes['checked'] = 'checked';
       }
-
-      $attributes['type'] = 'checkbox';
-      $attributes['value'] = $key;
-      $attributes['name'] = $name.'[]';
 
       $options[] = $this->renderContentTag('input', self::escapeOnce($option), $attributes);
     }
@@ -84,5 +103,19 @@ class swWidgetFormInputCheckboxGroup extends sfWidgetFormSelectMany
     $this->attributes = $mainAttributes;
 
     return $options;
+  }
+  
+  public function __clone()
+  {
+    
+    if ($this->getOption('clone_callable') && $this->getOption('choices') instanceof sfCallable)
+    {
+      $callable = $this->getOption('choices')->getCallable();
+      if (is_array($callable))
+      {
+        $callable[0] = $this;
+        $this->setOption('choices', new sfCallable($callable));
+      }
+    }
   }
 }
