@@ -86,4 +86,36 @@ class swToolbox
     // add the onchange event listener to the widget
     $widget->setAttribute('onchange', 'swToolbox.updateFormElements("'.$url.'", this, "'.$class.'", "'.$format.'", ["'.implode('", "', $elements).'"]);');
   }
+  
+  /*
+   * As sf1.1.X, there is a bug with associative files upload
+   * 
+   * solution from http://fr2.php.net/manual/en/features.file-upload.multiple.php
+   */
+  static function convertFileInformation($taintedFiles)
+  {
+    $newOrdering = array();
+    foreach(array_keys($taintedFiles) as $attr)
+    {
+       self::groupFileInfoByVariable($newOrdering, $taintedFiles[$attr], $attr);
+    }
+    
+    return $newOrdering;
+  }
+  
+  static private function groupFileInfoByVariable(&$top, $info, $attr) {
+    if (is_array($info)) {
+      foreach ($info as $var => $val) {
+        if (is_array($val)) {
+          self::groupFileInfoByVariable($top[$var], $val, $attr);
+        } else {
+          $top[$var][$attr] = $val;
+        }
+      }
+    } else {
+      $top[$attr] = $info;
+    }
+
+    return true;
+  }
 }
