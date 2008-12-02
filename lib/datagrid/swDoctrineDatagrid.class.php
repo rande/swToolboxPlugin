@@ -135,13 +135,23 @@ abstract class swDoctrineDatagrid extends sfForm
 
   public function configure()
   {
+  
     $this->configureDatagrid();
-
-    
   }
 
   abstract function getModelName();
 
+  function getQueryParameters()
+  {
+
+    return $this->getValues();
+  }
+    
+  function getQueryString()
+  {
+    return http_build_query($this->getQueryParameters());
+  }
+  
   function setupDatagrid() {}
 
   function configureDatagrid() {}
