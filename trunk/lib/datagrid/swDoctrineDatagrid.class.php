@@ -203,6 +203,16 @@ abstract class swDoctrineDatagrid extends sfForm
     return $this->pager->getLastPage();
   }
   
+  public function getFirstPage()
+  {
+    return $this->pager->getFirstPage();
+  }
+  
+  public function getCurrentMaxLink()
+  {
+    return $this->pager->getCurrentMaxLink();
+  }
+  
   public function getNextPage()
   {
     return $this->pager->getNextPage();
