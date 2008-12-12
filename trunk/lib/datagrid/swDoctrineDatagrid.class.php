@@ -64,11 +64,16 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->init();
   }
 
-  public function addFilter($name, $default_value, $widget, $validator)
+  public function addFilter($name, $default_value, $widget, $validator, $label = null)
   {
     $this->filters[$name] = $default_value;
     $this->widgetSchema[$name] = $widget;
     $this->validatorSchema[$name] = $validator;
+    
+    if($label)
+    {
+      $this->widgetSchema->setLabel($name, $label);
+    }
   }
   
   public function setup()
