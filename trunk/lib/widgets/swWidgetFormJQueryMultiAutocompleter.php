@@ -65,8 +65,8 @@ class swWidgetFormJQueryMultiAutocompleter extends sfWidgetFormInput
            parent::render('autocomplete_'.$name, $value, $attributes, $errors).
            sprintf(<<<EOF
 <script type="text/javascript">
-  \$("#%s")
-  .autocomplete('%s', \$.extend({}, {
+  jQuery("#%s")
+  .autocomplete('%s', jQuery.extend({}, {
     dataType: 'json',
     multiple: true,
     parse:    function(data) {
@@ -77,7 +77,7 @@ class swWidgetFormJQueryMultiAutocompleter extends sfWidgetFormInput
       return parsed;
     }
   }, %s))
-  .result(function(event, data) { \$("#%s").val(jQuery(event.target).val()); });
+  .result(function(event, data) { jQuery("#%s").val(jQuery(event.target).val()); });
 </script>
 EOF
       ,
