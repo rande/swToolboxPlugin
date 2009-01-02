@@ -118,4 +118,150 @@ class swToolbox
 
     return true;
   }
+  
+  /**
+   * Listen to the configuration.method_not_found to extends 
+   * the configuration object
+   *
+   * @param sfEvent $event
+   */
+  static function configurationMethodNotFound(sfEvent $event)
+  {
+    $params = $event->getParameters();
+    
+    switch($params['method'])
+    {
+      case 'registerZend':
+        self::registerZend($event);
+        break;
+    }
+  }
+  
+  /**
+   * Listen to the component.method_not_found to extends 
+   * the configuration object
+   *
+   * @param sfEvent $event
+   */
+  static function componentMethodNotFound(sfEvent $event)
+  {
+    $params = $event->getParameters();
+    
+    switch($params['method'])
+    {
+      case 'sendMail':
+        self::sendMail($event);
+        break;
+    }
+
+  }
+  
+  static private $zendLoaded = false;
+  
+  /**
+   * Register zend
+   *
+   * @param sfEvent $event
+   */
+  static function registerZend(sfEvent $event)
+  {
+    $event->setProcessed(true);
+    
+    if (self::$zendLoaded)
+    {
+    
+      return;
+    }
+    
+    if(sfConfig::get('app_swToolbox_register_zend', true))
+    {
+      set_include_path(sfConfig::get('sf_lib_dir').'/vendor'.PATH_SEPARATOR.get_include_path());
+    }
+
+    if(!sfAutoload::getInstance()->autoload('Zend_Loader'))
+    {
+      throw new LogicException('Please install Zend Framework Library inside : '.sfConfig::get('sf_lib_dir').'/vendor');
+    }
+    
+    self::$zendLoaded = true;
+  }
+  
+  static public function sendMail(sfEvent $event)
+  {
+    $event->setProcessed(true);
+    
+    // 1. RETRIEVE PARAMETERS & VARIABLES
+    $context = sfContext::getInstance();
+    $params = $event->getParameters();
+    if(count($params['arguments']) == 3)
+    {
+      list($moduleName, $actionName, $vars) = $params['arguments'];
+    }
+    else
+    {
+      list($moduleName, $actionName) = $params['arguments'];
+    }
+    
+    $config = sfConfig::get('app_swToolbox_mail');
+    
+    // 2. REGISTER ZEND CLASS
+    $context->getConfiguration()->registerZend();
+    
+    // 3. CREATE THE ACTION
+    $action = $context->getController()->getAction($moduleName, $actionName);
+    
+    // check for a module config.php
+    $moduleConfig = sfConfig::get('sf_app_module_dir').'/'.$moduleName.'/config/config.php';
+    if (is_readable($moduleConfig))
+    {
+      require_once($moduleConfig);
+    }
+    
+    // 4. EXECUTE THE ACTION
+    $action->getVarHolder()->add($vars);
+    $action->execute($context->getRequest());
+    
+    // 5. RENDER THE MAIL
+    $view = new swMailView($context, $moduleName, $actionName, 'swMailView');
+    $view->setDirectory(sfConfig::get('sf_app_module_dir').'/'.$moduleName.'/templates');
+    
+    // define decorator
+    if($config['decorator']['enabled'])
+    {
+      $view->setDecorator(true);
+      $view->setDecoratorDirectory($config['decorator']['directory']); 
+    }
+    else
+    {
+      $view->setDecorator(false);
+    }
+    // text version
+    try 
+    {
+      $view->setTemplate($actionName.'Success.text.php');
+      $view->setDecoratorTemplate($config['decorator']['template'].'.text.php');
+      $text_version = $view->render($action->getVarHolder()->getAll());
+      $action->mail->setBodyText($text_version, $config['charset'], $config['encoding']);
+    } 
+    catch(sfRenderException $e)
+    {}
+    
+    // html version
+    try {
+      $view->setTemplate($actionName.'Success.html.php');
+      $view->setDecoratorTemplate($config['decorator']['template'].'.html.php');
+      $html_version = $view->render($action->getVarHolder()->getAll());
+      $action->mail->setBodyHtml($html_version, $config['charset'], $config['encoding']);
+    }
+    catch(sfRenderException $e)
+    {}
+
+    // 6. SEND THE MAIL
+    $transport_class = $config['transport']['class'];
+    $transport_settings = $config['transport']['class'];
+    
+    $action->mail->send(new $transport_class($transport_settings));
+    
+    return $action->mail;
+  }
 }

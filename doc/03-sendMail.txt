@@ -1,0 +1,71 @@
+sendMail
+========
+
+This feature has been removed from symfony version 1.1 and 1.2. This will simulate the sendMail method
+and add extras features :
+  - email decorator
+  - Zend_Mail Support
+  - Charset and Encoding
+  - variables assignement from the contoller
+
+This solution is based on Zend_Mail for more information please refer to the Zend Framework documentation
+available at : http://framework.zend.com/manual/en/zend.mail.html
+
+Installation
+------------
+
+1. Install Zend Framework available at http://www.zend.com/community/downloads 
+   you can also install the lib via svn (http://framework.zend.com/svn/framework/standard/tags/release-1.7.2/library/Zend)
+   
+   The lib must be installed into SF_ROOT_DIR/lib/vendor/
+
+2. Edit the app.yml file
+
+  swToolbox:
+    mail:
+      charset: utf-8                             # charset to use : utf-8, iso-8859-1, ...
+      encoding: quoted-printable                 # 7bit, 8bit, quoted-printable, base64 (default : quoted-printable)
+      transport:                                 # define which transport class to used
+        class: Zend_Mail_Transport_Sendmail      # Zend_Mail_Transport_Sendmail | Zend_Mail_Transport_Smtp
+        parameters:
+      decorator:                                 # define the layout use in the mail
+        enabled: off                             # on | off : set true if all your mail share the same layout
+        directory: %SF_APP_TEMPLATE_DIR%         # where the layout is located, ie %SF_APP_TEMPLATE_DIR%
+        template: email                          # name of the layout, automatically translate to name.FORMAT.php
+      view:                                      # define the view class used to render the template
+        class: swMailView
+        
+3. Clear your cache
+
+
+Usage
+-----
+
+  public finction executeConfirmPaiement()
+  {
+    // [...]
+    
+    // create object in your controller
+    $invoice = Doctrine::getTable('Invoice')->find(..);
+    
+    // call the email action
+    $action->sendMail('yourModule', 'sendInvoice', array('invoice' => $invoice);
+  }
+
+  public function executeSendInvoice(sfWebRequest $request)
+  {
+    $mail = new swMail;
+    
+    $mail->setSubject('Your Invoice #'.$invoice->getReference());
+    $mail->setFrom('billing@yoursite.com', 'Billing Service');
+    $mail->addTo($this->invoice->getEmail(), $this->invoice->getName());
+    
+    $this->mail = $mail;
+  }
+  
+You should have a least one template file : sendInvoiceSuccess.txt.php or sendInvoiceSuccess.html.php in your
+module/templates folder.
+
+If you want a specific layout around your email (like default header and footer), enable the decorator option
+and create a 'email.txt.php' and/or 'email.html.php' inside the decorator directory.
+
