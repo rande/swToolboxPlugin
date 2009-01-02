@@ -1,5 +1,4 @@
 <?php
-
 /*
  *  $Id$
  *
@@ -22,10 +21,22 @@
  * <http://www.soleoweb.com>.
  */
 
-if (sfConfig::get('app_swToolbox_routes_register', true) && in_array('swToolbox', sfConfig::get('sf_enabled_modules', array())))
+/**
+ *
+ * @package    swToolboxPlugin
+ * @subpackage mail
+ * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * @version    SVN: $Id$
+ */
+class swMailView extends sfPHPView
 {
-  $this->dispatcher->connect('routing.load_configuration', array('swToolboxRouting', 'listenToRoutingLoadConfigurationEvent'));
+  /**
+   * Retrieves the template engine associated with this view.
+   *
+   * @return string sfMail
+   */
+  public function getEngine()
+  {
+    return 'swMail';
+  }
 }
-
-$this->dispatcher->connect('component.method_not_found', array('swToolbox', 'componentMethodNotFound'));
-$this->dispatcher->connect('configuration.method_not_found', array('swToolbox', 'configurationMethodNotFound'));
