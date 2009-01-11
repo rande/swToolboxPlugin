@@ -28,28 +28,21 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swMail extends Zend_Mail
+class swMailDebugTransport extends Zend_Mail_Transport_Abstract
 {
-  public function __construct($charset = null)
+
+  protected $raw_mail;
+  
+  public function _sendMail()
   {
-    if(is_null($charset))
-    {
-      $config = sfConfig::get('app_swToolbox_mail');
-      $charset = $config['charset'];
-    }
     
-    parent::__construct($charset);
+    $this->raw_mail = $this->header . Zend_Mime::LINEEND . $this->body;
+    
   }
   
-  public function quickView()
+  public function getRawMail()
   {
-    $mail = "q";
-    foreach($this->getParts() as $part)
-    {
-      var_dump($part);
-      $mail .= $part->getContent();
-    }
-    
-    return $mail;
+    return $this->raw_mail;
   }
+
 }

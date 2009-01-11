@@ -149,8 +149,9 @@ class swToolbox
     
     switch($params['method'])
     {
+      case 'sendEmail':
       case 'sendMail':
-        self::sendMail($event);
+        $event->setReturnValue(self::sendMail($event));
         break;
     }
 
@@ -223,7 +224,11 @@ class swToolbox
     
     // 5. RENDER THE MAIL
     $view = new swMailView($context, $moduleName, $actionName, 'swMailView');
-    $view->setDirectory(sfConfig::get('sf_app_module_dir').'/'.$moduleName.'/templates');
+
+    foreach($action->getVarHolder()->getAll() as $name => $value)
+    {
+      $view->setAttribute($name, $value);
+    }
     
     // define decorator
     if($config['decorator']['enabled'])
@@ -235,12 +240,22 @@ class swToolbox
     {
       $view->setDecorator(false);
     }
+    
     // text version
     try 
     {
-      $view->setTemplate($actionName.'Success.text.php');
-      $view->setDecoratorTemplate($config['decorator']['template'].'.text.php');
+      $template = $actionName.'Success.text.php';
+      $template_dir = $context->getConfiguration()->getTemplateDir($moduleName, $template);
+      
+      $view->setDirectory($template_dir);
+      $view->setTemplate($template);
+      if($view->isDecorator())
+      {
+        $view->setDecoratorTemplate($config['decorator']['template'].'.text.php');
+      }
+      
       $text_version = $view->render($action->getVarHolder()->getAll());
+      
       $action->mail->setBodyText($text_version, $config['charset'], $config['encoding']);
     } 
     catch(sfRenderException $e)
@@ -248,9 +263,18 @@ class swToolbox
     
     // html version
     try {
-      $view->setTemplate($actionName.'Success.html.php');
-      $view->setDecoratorTemplate($config['decorator']['template'].'.html.php');
+      $template = $actionName.'Success.html.php';
+      $template_dir = $context->getConfiguration()->getTemplateDir($moduleName, $template);
+      
+      $view->setDirectory($template_dir);
+      $view->setTemplate($template);
+      if($view->isDecorator())
+      {
+        $view->setDecoratorTemplate($config['decorator']['template'].'.html.php');
+      }
+      
       $html_version = $view->render($action->getVarHolder()->getAll());
+      
       $action->mail->setBodyHtml($html_version, $config['charset'], $config['encoding']);
     }
     catch(sfRenderException $e)
@@ -258,7 +282,12 @@ class swToolbox
 
     // 6. SEND THE MAIL
     $transport_class = $config['transport']['class'];
-    $transport_settings = $config['transport']['class'];
+    $transport_settings = $config['transport']['parameters'];
+    
+    if(!sfAutoload::getInstance()->loadClass($transport_class))
+    {
+      throw new LogicException('Please configure the mail swToolboxPlugin settings');
+    }
     
     $action->mail->send(new $transport_class($transport_settings));
     
