@@ -166,12 +166,17 @@ abstract class swDoctrineDatagrid extends sfForm
     return $query;
   }
 
+  public function getBaseQuery()
+  {
+    return Doctrine::getTable($this->getModelName())->createQuery();
+  }
+  
   public function preparePager()
   {
     $this->pager = new sfDoctrinePager($this->getModelName());
     $this->pager->setPage($this->getOption('page'));
-    $query = $this->pager->getQuery();
-    $this->pager->setQuery($this->buildQuery($query));
+
+    $this->pager->setQuery($this->buildQuery($this->getBaseQuery()));
     
     $this->pager->setMaxPerPage($this->getOption('per_page', 25));
     $this->pager->init();
