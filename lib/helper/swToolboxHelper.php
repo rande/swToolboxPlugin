@@ -38,3 +38,145 @@ function sw_t($title)
   
   return $title;
 }
+
+
+/**
+ * Original code from sfPagerNavigationPlugin, available at http://www.symfony-project.org/plugins/sfPagerNavigationPlugin
+ * Copyright (c) 2004-2007 Francois Zaninotto
+ * 
+ * Adapted to use symfony 1.2 features.
+ * 
+ * Outputs a regular navigation navigation.
+ * It outputs a series of links to the first, previous, next and last page
+ * as well as to the 5 pages surrounding the current page.
+ *
+ * @param  object sfPager object of the current pager 
+ * @param  string 'module/action' or 'rule' of the paginated action
+ * @param  array parameters to create the final url
+ * @param  array of options to render the link_to element
+ * 
+ * @return string XHTML code containing links
+ */
+function sw_pager_navigation()
+{
+  $arguments = func_get_args();
+  
+  if (empty($arguments[1]) || '@' == substr($arguments[1], 0, 1) || false !== strpos($arguments[1], '/'))
+  {
+    return call_user_func_array('sw_pager_navigation1', $arguments);
+  }
+  else
+  {
+    
+    if (!array_key_exists(3, $arguments))
+    {
+      $arguments[3] = array();
+    }
+    
+    return call_user_func_array('sw_pager_navigation2', $arguments);
+  }
+}
+
+/**
+ * Original code from sfPagerNavigationPlugin, available at http://www.symfony-project.org/plugins/sfPagerNavigationPlugin
+ * Copyright (c) 2004-2007 Francois Zaninotto
+ * 
+ * Outputs a regular navigation navigation.
+ * It outputs a series of links to the first, previous, next and last page
+ * as well as to the 5 pages surrounding the current page.
+ *
+ * @param  object sfPager object of the current pager 
+ * @param  string 'module/action' or '@rule' of the paginated action
+ * @return string XHTML code containing links
+ */
+function sw_pager_navigation1($pager, $uri)
+{
+  $navigation = '';
+ 
+  if ($pager->haveToPaginate())
+  {  
+    $uri .= (preg_match('/\?/', $uri) ? '&' : '?').'page=';
+ 
+    // First and previous page
+    if ($pager->getPage() != 1)
+    {
+      $navigation .= link_to(image_tag(sfConfig::get('sf_admin_web_dir') . '/images/first.png', 'align=absmiddle'), $uri.'1');
+      $navigation .= link_to(image_tag(sfConfig::get('sf_admin_web_dir') . '/images/previous.png', 'align=absmiddle'), $uri.$pager->getPreviousPage()).'&nbsp;';
+    }
+ 
+    // Pages one by one
+    $links = array();
+    foreach ($pager->getLinks() as $page)
+    {
+      $links[] = link_to_unless($page == $pager->getPage(), $page, $uri.$page);
+    }
+    $navigation .= join('&nbsp;&nbsp;', $links);
+ 
+    // Next and last page
+    if ($pager->getPage() != $pager->getLastPage())
+    {
+      $navigation .= '&nbsp;'.link_to(image_tag(sfConfig::get('sf_admin_web_dir') . '/images/next.png', 'align=absmiddle'), $uri.$pager->getNextPage());
+      $navigation .= link_to(image_tag(sfConfig::get('sf_admin_web_dir') . '/images/last.png', 'align=absmiddle'), $uri.$pager->getLastPage());
+    }
+ 
+  }
+ 
+  return $navigation;
+}
+
+/**
+ * Original code from sfPagerNavigationPlugin, available at http://www.symfony-project.org/plugins/sfPagerNavigationPlugin
+ * Copyright (c) 2004-2007 Francois Zaninotto
+ * 
+ * Adapted to use symfony 1.2 features.
+ * 
+ * Outputs a regular navigation navigation.
+ * It outputs a series of links to the first, previous, next and last page
+ * as well as to the 5 pages surrounding the current page.
+ *
+ * @param  object sfPager object of the current pager 
+ * @param  string 'module/action' or 'rule' of the paginated action
+ * @param  array parameters to create the final url
+ * @param  array of options to render the link_to element
+ * 
+ * @return string XHTML code containing links
+ */
+function sw_pager_navigation2($pager, $uri, $params = array(), $options = array())
+{
+  $navigation = '';
+ 
+  if ($pager->haveToPaginate())
+  {  
+    // First and previous page
+    if ($pager->getPage() != 1)
+    {
+      $params['page'] = 1; 
+      $navigation .= link_to2(image_tag(sfConfig::get('sf_admin_web_dir') . '/images/first.png', 'align=absmiddle'), $uri, $params, $options);
+      
+      $params['page'] = $pager->getPreviousPage();
+      $navigation .= link_to2(image_tag(sfConfig::get('sf_admin_web_dir') . '/images/previous.png', 'align=absmiddle'), $uri, $params, $options).'&nbsp;';
+    }
+ 
+    // Pages one by one
+    $links = array();
+    foreach ($pager->getLinks() as $page)
+    {
+      $params['page'] = $page;
+      $links[] = link_to2($page, $uri, $params, $options);
+    }
+    $navigation .= join('&nbsp;&nbsp;', $links);
+ 
+    // Next and last page
+    if ($pager->getPage() != $pager->getLastPage())
+    {
+      $params['page'] = $pager->getNextPage();
+      $navigation .= '&nbsp;'.link_to2(image_tag(sfConfig::get('sf_admin_web_dir') . '/images/next.png', 'align=absmiddle'), $uri, $params, $options);
+      
+      $params['page'] = $pager->getLastPage();
+      $navigation .= link_to2(image_tag(sfConfig::get('sf_admin_web_dir') . '/images/last.png', 'align=absmiddle'), $uri, $params, $options);
+    }
+ 
+  }
+ 
+  return $navigation;
+}
