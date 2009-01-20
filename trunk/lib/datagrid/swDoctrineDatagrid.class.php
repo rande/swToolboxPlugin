@@ -36,6 +36,7 @@ abstract class swDoctrineDatagrid extends sfForm
 {
   protected $pager;
   protected $filters = array();
+  protected $schema_format_name = 'filters';
   
   public function __construct($params = array(), $options = array(), $CSRFSecret = null)
   {
@@ -81,7 +82,7 @@ abstract class swDoctrineDatagrid extends sfForm
     // format the datagrid
     $this->widgetSchema->addFormFormatter('swSchemaFormatterDatagrid', new swSchemaFormatterDatagrid($this->widgetSchema));
     $this->widgetSchema->setFormFormatterName('swSchemaFormatterDatagrid');
-    $this->widgetSchema->setNameFormat('filters[%s]');
+    $this->widgetSchema->setNameFormat($this->schema_format_name.'[%s]');
     
     $this->widgetSchema->getFormFormatter()->setTranslationCatalogue('datagrid');
     
@@ -148,7 +149,12 @@ abstract class swDoctrineDatagrid extends sfForm
 
   function getQueryParameters()
   {
-
+    if(strlen($this->schema_format_name) > 0)
+    {
+      
+      return array($this->schema_format_name => $this->getValues());
+    }
+    
     return $this->getValues();
   }
     
