@@ -27,5 +27,11 @@ if (sfConfig::get('app_swToolbox_routes_register', true) && in_array('swToolbox'
   $this->dispatcher->connect('routing.load_configuration', array('swToolboxRouting', 'listenToRoutingLoadConfigurationEvent'));
 }
 
+if(sfConfig::get('app_swToolbox_autoload_helper', true))
+{
+  $this->loadHelpers(array('swToolbox'));
+}
+
+
 $this->dispatcher->connect('component.method_not_found', array('swToolbox', 'componentMethodNotFound'));
 $this->dispatcher->connect('configuration.method_not_found', array('swToolbox', 'configurationMethodNotFound'));
