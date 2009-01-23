@@ -78,13 +78,17 @@ class swWidgetFormJQueryMultiAutocompleter extends sfWidgetFormInput
     }
   }, %s))
   .result(function(event, data) { jQuery("#%s").val(jQuery(event.target).val()); });
+  jQuery("#%s").keyup(function(event) { jQuery("#%s").val(jQuery(event.target).val()); });
 </script>
 EOF
       ,
       $this->generateId('autocomplete_'.$name),
       $this->getOption('url'),
       $this->getOption('config'),
+      $this->generateId($name),
+      $this->generateId('autocomplete_'.$name),
       $this->generateId($name)
+      
     );
   }
 
