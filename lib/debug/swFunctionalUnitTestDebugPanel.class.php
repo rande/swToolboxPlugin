@@ -62,7 +62,7 @@ $test    = $browser->test();
 $conn    = Doctrine::getConnectionByTableName(\'your_model\');
 
 $conn->beginTransaction();
-'.swFilterFonctionalTest::getRawPhp().'
+'.swFilterFunctionalTest::getRawPhp().'
 
 $conn->rollback();', ENT_COMPAT, 'UTF-8').'
 </textarea>
