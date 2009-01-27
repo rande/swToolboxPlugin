@@ -35,3 +35,9 @@ if(sfConfig::get('app_swToolbox_autoload_helper', true))
 
 $this->dispatcher->connect('component.method_not_found', array('swToolbox', 'componentMethodNotFound'));
 $this->dispatcher->connect('configuration.method_not_found', array('swToolbox', 'configurationMethodNotFound'));
+
+if (sfConfig::get('sf_web_debug'))
+{
+  
+  $this->dispatcher->connect('debug.web.load_panels', array('swFunctionalUnitTestDebugPanel', 'listenToAddPanelEvent'));
+}
