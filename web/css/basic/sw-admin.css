@@ -340,20 +340,20 @@ div.sw-base-container-column h1
 }
 
 /* LIST LABEL, ul > li*/
-ul.sw-base-admin-list_labels
+ul.sw-base-admin-list-labels
 {
   list-style: none;
   
 }
 
-ul.sw-base-admin-list_labels li
+ul.sw-base-admin-list-labels li
 {
   clear: both;
   margin-left: 15px;
   
 }
 
-ul.sw-base-admin-list_labels span
+ul.sw-base-admin-list-labels span
 {
   font-weight: bold;
   width: 75px;
