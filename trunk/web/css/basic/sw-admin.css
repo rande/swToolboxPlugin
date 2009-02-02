@@ -343,7 +343,7 @@ div.sw-base-container-column h1
 ul.sw-base-admin-list-labels
 {
   list-style: none;
-  
+  margin-left: 15px;
 }
 
 ul.sw-base-admin-list-labels li
