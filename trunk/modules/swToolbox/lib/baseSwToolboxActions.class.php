@@ -73,6 +73,13 @@ class baseSwToolboxActions extends sfActions
     }
     
     $form = new $class;
+    
+    if(!$form instanceof sfForm)
+    {
+      
+      return sfView::NONE;
+    }
+    
     $form->setDefaults($request->getParameter($format));
     
     if(!method_exists($form, 'getDynamicValues'))
