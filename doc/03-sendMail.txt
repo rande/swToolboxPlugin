@@ -6,7 +6,7 @@ and add extras features :
   - email decorator
   - Zend_Mail Support
   - Charset and Encoding
-  - variables assignement from the contoller
+  - variables assignement from the controller
 
 This solution is based on Zend_Mail for more information please refer to the Zend Framework documentation
 available at : http://framework.zend.com/manual/en/zend.mail.html
@@ -26,8 +26,16 @@ Installation
       charset: utf-8                             # charset to use : utf-8, iso-8859-1, ...
       encoding: quoted-printable                 # 7bit, 8bit, quoted-printable, base64 (default : quoted-printable)
       transport:                                 # define which transport class to used
+        # sample with Sendmail
         class: Zend_Mail_Transport_Sendmail      # Zend_Mail_Transport_Sendmail | Zend_Mail_Transport_Smtp
-        parameters:
+        parameters: "-ffrom@yourdomain.com"
+        
+        # sample with Smtp
+        class: Zend_Mail_Transport_Smtp          # Zend_Mail_Transport_Sendmail | Zend_Mail_Transport_Smtp
+        parameters: 
+          - value 1
+          - { auth: Plain|Crammd5|Login, username: yourusername, password: yourpassword }
+          
       decorator:                                 # define the layout use in the mail
         enabled: off                             # on | off : set true if all your mail share the same layout
         directory: %SF_APP_TEMPLATE_DIR%         # where the layout is located, ie %SF_APP_TEMPLATE_DIR%
@@ -36,6 +44,7 @@ Installation
         class: swMailView
         
 3. Clear your cache
+
 
 
 Usage
