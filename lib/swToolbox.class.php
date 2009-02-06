@@ -284,12 +284,20 @@ class swToolbox
     $transport_class = $config['transport']['class'];
     $transport_settings = $config['transport']['parameters'];
     
+    if(!is_array($transport_settings))
+    {
+      $transport_settings = array($transport_settings);
+    }
+    
     if(!sfAutoload::getInstance()->loadClass($transport_class))
     {
       throw new LogicException('Please configure the mail swToolboxPlugin settings');
     }
     
-    $action->mail->send(new $transport_class($transport_settings));
+    $reflection_class = new ReflectionClass($transport_class);
+    $transport_class = $reflection_class->newInstanceArgs($transport_settings);
+    
+    $action->mail->send($transport_class);
     
     return $action->mail;
   }
