@@ -42,21 +42,9 @@ abstract class swDoctrineDatagrid extends sfForm
   {
     parent::__construct(array(), $options, $CSRFSecret);
 
-    // add page
-    //$page = (isset($options['page']) ? $options['page'] : 1);
-    //$this->addFilter('page', $page, new sfWidgetFormInputHidden, new sfValidatorPass);
-    
-    // add sort option 
-    /* NO IMPLEMENTED YET
-    $order_by = (isset($options['order_by']) ? $options['order_by'] : null);
-    $this->addFilter('order_by', $order_by, new sfWidgetFormInputHidden, new sfValidatorPass);
-    $params['order_by'] = $order_by;
-    
-    $order_field = (isset($options['order_field']) ? $options['order_field'] : null);
-    $this->addFilter('order_field', $order_field, new sfWidgetFormInputHidden, new sfValidatorPass);
-    $params['order_field'] = $order_field;
-    */
-    
+    $params['sort_by'] = (isset($params['sort_by']) ? $params['sort_by'] : null);
+    $params['sort_order'] = (isset($params['sort_order']) ? $params['sort_order'] : null);
+   
     // init values
     $defaults = $this->prepareDefaultValues($params);
     $this->setDefaults($defaults);
@@ -77,6 +65,53 @@ abstract class swDoctrineDatagrid extends sfForm
     }
   }
   
+  public function getSortableFields()
+  {
+    foreach ($this->widgetSchema->getFields() as $name => $widget)
+    {
+      if(in_array($name, array('sort_by', 'sort_order')))
+      {
+        
+        continue;
+      }
+      
+      $fields[$name] = $widget->getLabel() ? $widget->getLabel() : $name; 
+    }
+    
+    return $fields;
+  }
+  
+  public function getSortUrl($url, $sort_by, $sort_order = null)
+  {
+
+    if(is_null($sort_order))
+    {
+      $sort_order = $this->getValue('sort_by') == $sort_by ? ($this->getValue('sort_order') == 'ASC' ? 'ASC' : 'DESC') : 'DESC';
+    }
+    
+    $url .= '?' . $this->getQueryString(array(
+      'sort_by'    => $sort_by,
+      'sort_order' => $sort_order
+    ));
+    
+    return url_for($url);
+  }
+  
+  public function getSortLink($text, $url, $sort_by, $sort_order = null, $options = array())
+  {
+    if(is_null($sort_order))
+    {
+      $sort_order = $this->getValue('sort_by') == $sort_by ? ($this->getValue('sort_order') == 'ASC' ? 'DESC' : 'ASC') : 'DESC';
+    }
+    
+    $url .= '?' . $this->getQueryString(array(
+      'sort_by'    => $sort_by,
+      'sort_order' => $sort_order 
+    ));
+     
+    return link_to($text, $url , $options);
+  }
+  
   public function setup()
   {
     // format the datagrid
@@ -85,6 +120,9 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->widgetSchema->setNameFormat($this->schema_format_name.'[%s]');
     
     $this->widgetSchema->getFormFormatter()->setTranslationCatalogue('datagrid');
+    
+    $this->addFilter('sort_by', null, new sfWidgetFormInputHidden, new sfValidatorPass);
+    $this->addFilter('sort_order', null, new sfWidgetFormInputHidden, new sfValidatorPass);
     
     $this->setupDatagrid();
   }
@@ -117,50 +155,60 @@ abstract class swDoctrineDatagrid extends sfForm
     return $filters;
   }
 
+  public function getStoreNamespace()
+  {
+    return $this->getOption('store_namespace', get_class($this));
+  }
+  
   public function getStoredValues()
   {
-    if($this->getOption('store', true) == false)
+    if($this->getOption('store', false) == false)
     {
       
       return array();
     }
     
-    return sfContext::getInstance()->getUser()->getAttribute('filters', array(), get_class($this));
+    return sfContext::getInstance()->getUser()->getAttribute('filters', array(), $this->getStoreNamespace());
   }
 
   public function setStoredValues($values)
   {
-    if($this->getOption('store', true) == false)
+    if($this->getOption('store', false) == false)
     {
       
       return ;
     }
     
-    sfContext::getInstance()->getUser()->setAttribute('filters', $values, get_class($this));
+    sfContext::getInstance()->getUser()->setAttribute('filters', $values, $this->getStoreNamespace());
   }
 
   public function configure()
   {
   
     $this->configureDatagrid();
+    
   }
 
   abstract function getModelName();
 
-  function getQueryParameters()
+  function getQueryParameters($merge = array())
   {
+    
+    $value = array_merge($this->getValues(), $merge);
+  
     if(strlen($this->schema_format_name) > 0)
     {
       
-      return array($this->schema_format_name => $this->getValues());
+      $value = array($this->schema_format_name => $value);
     }
     
-    return $this->getValues();
+    return $value;
   }
     
-  function getQueryString()
+  function getQueryString($merge = array())
   {
-    return http_build_query($this->getQueryParameters());
+    
+    return http_build_query($this->getQueryParameters($merge));
   }
   
   function setupDatagrid() {}
@@ -174,33 +222,39 @@ abstract class swDoctrineDatagrid extends sfForm
 
   public function getBaseQuery()
   {
+    
     return Doctrine::getTable($this->getModelName())->createQuery();
   }
   
   public function preparePager()
   {
-    $this->pager = new sfDoctrinePager($this->getModelName());
-    $this->pager->setPage($this->getOption('page'));
-
-    $this->pager->setQuery($this->buildQuery($this->getBaseQuery()));
+    $page  = $this->getOption('page');
+    $query = $this->buildQuery($this->getBaseQuery());
+    $per_page = $this->getOption('per_page', 25);
     
-    $this->pager->setMaxPerPage($this->getOption('per_page', 25));
+    $this->pager = new sfDoctrinePager($this->getModelName());
+    $this->pager->setPage($page);
+    $this->pager->setQuery($query);
+    $this->pager->setMaxPerPage($per_page);
     $this->pager->init();
   }
 
   public function getPager()
   {
+    
     return $this->pager;
   }
   
   // PAGER PROXY METHODS
   public function getResults()
   {
+    
     return $this->pager->getResults();
   }
 
   public function haveToPaginate()
   {
+    
     return $this->pager->haveToPaginate();
   }
   
@@ -211,41 +265,49 @@ abstract class swDoctrineDatagrid extends sfForm
 
   public function getLinks()
   {
+    
     return $this->pager->getLinks();
   }
   
   public function getLastPage()
   {
+    
     return $this->pager->getLastPage();
   }
   
   public function getFirstPage()
   {
+    
     return $this->pager->getFirstPage();
   }
   
   public function getCurrentMaxLink()
   {
+    
     return $this->pager->getCurrentMaxLink();
   }
   
   public function getNextPage()
   {
+    
     return $this->pager->getNextPage();
   }
   
   public function getPreviousPage()
   {
+    
     return $this->pager->getPreviousPage();
   }
   
   public function count()
   {
+    
     return $this->pager->getNbResults();
   }
 
   public function getNbResults()
   {
+    
     return $this->pager->getNbResults();
   }
 }
