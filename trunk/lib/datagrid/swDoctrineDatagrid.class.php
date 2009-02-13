@@ -65,6 +65,13 @@ abstract class swDoctrineDatagrid extends sfForm
     }
   }
   
+  
+  public function hasSortableField($field)
+  {
+    
+    return array_key_exists($field, $this->getSortableFields());
+  }
+  
   public function getSortableFields()
   {
     foreach ($this->widgetSchema->getFields() as $name => $widget)
@@ -84,6 +91,12 @@ abstract class swDoctrineDatagrid extends sfForm
   public function getSortUrl($url, $sort_by, $sort_order = null)
   {
 
+    if(!$this->hasSortableField($sort_by))
+    {
+      
+      return $text;
+    }
+    
     if(is_null($sort_order))
     {
       $sort_order = $this->getValue('sort_by') == $sort_by ? ($this->getValue('sort_order') == 'ASC' ? 'ASC' : 'DESC') : 'DESC';
@@ -99,6 +112,12 @@ abstract class swDoctrineDatagrid extends sfForm
   
   public function getSortLink($text, $url, $sort_by, $sort_order = null, $options = array())
   {
+    if(!$this->hasSortableField($sort_by))
+    {
+      
+      return $text;
+    }
+    
     if(is_null($sort_order))
     {
       $sort_order = $this->getValue('sort_by') == $sort_by ? ($this->getValue('sort_order') == 'ASC' ? 'DESC' : 'ASC') : 'DESC';
