@@ -24,7 +24,7 @@
 
 /**
  *
- * @package    swBreadcrumb
+ * @package    swToolboxPlugin
  * @subpackage debug
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
