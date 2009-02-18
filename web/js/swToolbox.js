@@ -28,7 +28,7 @@ var swToolbox = {
     var data = '_sw_class=' + class_name + '&_sw_format=' + format + '&' + jQuery(form).serialize() + '&_sw_elements=' + elements + '&_sw_from=' + widget.name;
     
     jQuery.ajax({
-      type: 'POST',
+      type: 'GET',
       url: url,
       dataType: "json",
       data: data,
