@@ -46,7 +46,6 @@ class swMail extends Zend_Mail
     $mail = "q";
     foreach($this->getParts() as $part)
     {
-      var_dump($part);
       $mail .= $part->getContent();
     }
     
