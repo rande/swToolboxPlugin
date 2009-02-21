@@ -1,7 +1,7 @@
 <?php
-
-
 /*
+ *  $Id$
+ *
  * (c) 2008 Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -22,25 +22,21 @@
  */
 
 /**
- * 
- * Make sure the input is only text : a-Z, 0-1, "\n"
- * 
- * @author Thomas Rabaix <thomas.rabaix@gmail.com>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.soleoweb.com
- * 
- * SVN : $Id$
- **/
-class swValidatorText extends sfValidatorString
+ *
+ * @package    swToolbox
+ * @subpackage form 
+ * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * @version    SVN: $Id$
+ */
+class swFormDynamicResult
 {
 
-   public function doClean($value)
-   {
-     $value = (string) $value;
-     $value = strip_tags($value); // remove tags
-     
-     $value = parent::doClean($value);
-     
-     return $value;
-   }
+  public $value = null;
+  public $options  = array();
+
+  public function __construct($value, $options = array())
+  {
+    $this->value = $value;
+    $this->options  = $options;
+  }
 }
