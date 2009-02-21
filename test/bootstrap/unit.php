@@ -14,3 +14,5 @@ require_once(dirname(__FILE__).'/../../../../config/ProjectConfiguration.class.p
 $configuration = new ProjectConfiguration();
 include($configuration->getSymfonyLibDir().'/vendor/lime/lime.php');
 
+$configuration = ProjectConfiguration::getApplicationConfiguration('frontend', 'test', true);
+$context = sfContext::createInstance($configuration);

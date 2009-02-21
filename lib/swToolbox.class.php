@@ -56,67 +56,21 @@ class swToolbox
   }
   
   /**
-   * Helper method to be call inside a form. This is part of the "Dynamic Form Values" form feature
-   *
-   * @param sfForm $form
-   * @param sfWidget $widget
-   * @param array $elements
+   * Deprecated : use sfToolboxForm::updateElements
    */
   static function updateFormElements(sfForm $form, sfWidget $widget, array $elements)
   {
-    $context = sfContext::getInstance();
     
-    // add external javascript files
-    $context->getResponse()->addJavascript('/js/jQuery/jquery.min.js');
-    $context->getResponse()->addJavascript('/swToolboxPlugin/js/swToolbox.js', 'last');
-    
-    // find the form format
-    $format = $form->getWidgetSchema()->getNameFormat();
-    if(($pos = strpos($format, '[')) > 0)
-    {
-      $format = substr($format, 0, $pos);
-    }
-    
-    // define the class
-    $class = $context->getModuleName().'/'.get_class($form);
-
-    // define the callback url
-    $url = $context->getController()->genUrl('@sw_toolbox_retrieve_dynamic_values');
-    
-    // add the onchange event listener to the widget
-    $widget->setAttribute('onchange', 'swToolbox.updateFormElements("'.$url.'", this, "'.$class.'", "'.$format.'", ["'.implode('", "', $elements).'"]);');
+    throw new RuntimeExceptions('This method is now deprecated, use swToolboxFormHelper::updateFormElement');
   }
   
-  /*
-   * As sf1.1.X, there is a bug with associative files upload
-   * 
-   * solution from http://fr2.php.net/manual/en/features.file-upload.multiple.php
+  /**
+   * Deprecated : use sfToolboxForm::convertFileInformation
    */
   static function convertFileInformation($taintedFiles)
   {
-    $newOrdering = array();
-    foreach(array_keys($taintedFiles) as $attr)
-    {
-       self::groupFileInfoByVariable($newOrdering, $taintedFiles[$attr], $attr);
-    }
     
-    return $newOrdering;
-  }
-  
-  static private function groupFileInfoByVariable(&$top, $info, $attr) {
-    if (is_array($info)) {
-      foreach ($info as $var => $val) {
-        if (is_array($val)) {
-          self::groupFileInfoByVariable($top[$var], $val, $attr);
-        } else {
-          $top[$var][$attr] = $val;
-        }
-      }
-    } else {
-      $top[$attr] = $info;
-    }
-
-    return true;
+    return swToolboxFormHelper::convertFileInformation($taintedFiles);
   }
   
   /**
@@ -221,7 +175,7 @@ class swToolbox
     // 4. EXECUTE THE ACTION
     $action->getVarHolder()->add($vars);
     $action->execute($context->getRequest());
-    
+
     // 5. RENDER THE MAIL
     $view = new swMailView($context, $moduleName, $actionName, 'swMailView');
 
@@ -260,7 +214,7 @@ class swToolbox
     } 
     catch(sfRenderException $e)
     {}
-    
+
     // html version
     try {
       $template = $actionName.'Success.html.php';

@@ -21,11 +21,11 @@
  */
  
 var swToolbox = {
-  updateFormElements: function(url, widget, class_name, format, elements) {
+  updateFormElements: function(url, widget, class_name) {
     
     // get the parent form
     var form = widget.form;
-    var data = '_sw_class=' + class_name + '&_sw_format=' + format + '&' + jQuery(form).serialize() + '&_sw_elements=' + elements + '&_sw_from=' + widget.name;
+    var data = '_sw_class=' + class_name + '&_sw_name=' + widget.name + '&' + jQuery(form).serialize();
     
     jQuery.ajax({
       type: 'GET',
@@ -33,16 +33,19 @@ var swToolbox = {
       dataType: "json",
       data: data,
       cache: false,
-      elements: elements,
       form: form,
-      format: format,
       success: swToolbox.handleUpdateFormElementsResponse
     })
   },
   
   handleUpdateFormElementsResponse: function(data, textStatus) {
-    for(var param in data) {
-      jQuery('#' + this.format + '_' + param, this.form).val(data[param]);
+
+    for(var param in data) {      
+      var elm = jQuery("#" + param, this.form);
+      if(data[param].value != undefined)
+      {
+        elm.val(data[param].value);
+      }
     }
   }
 }

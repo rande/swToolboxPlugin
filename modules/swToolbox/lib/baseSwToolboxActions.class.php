@@ -41,18 +41,8 @@ class baseSwToolboxActions extends sfActions
   {
     
     $class_path = $request->getParameter('_sw_class');
-    $format     = $request->getParameter('_sw_format');
-    $from       = $request->getParameter('_sw_from');
-    $elements   = explode(',', $request->getParameter('_sw_elements', ''));
+    $name       = $request->getParameter('_sw_name');
     
-    // get the from : the modified field
-    if(!ereg(".*\[(.*)\]", $from, $results) || count($results) != 2)
-    {
-      return sfView::NONE;
-    }
-    
-    $from = $results[1];
-
     // get and load the form class
     $class = $class_path;
     $path = explode('/', $class_path);
@@ -68,6 +58,8 @@ class baseSwToolboxActions extends sfActions
       // not a module class, try the global scope
       if(!$loader->loadClass($class))
       {
+        $request->setAttribute('_sw_error', 'unable to load the class');
+        
         return sfView::NONE;
       }
     }
@@ -76,22 +68,41 @@ class baseSwToolboxActions extends sfActions
     
     if(!$form instanceof sfForm)
     {
+      $request->setAttribute('_sw_error', 'the instanciated class is not a sfForm class');
       
       return sfView::NONE;
     }
     
-    $form->setDefaults($request->getParameter($format));
+    if(($param = swToolboxFormHelper::getBindParameter($form->getWidgetSchema()->getNameFormat())) !== null)
+    {
+      $form->setDefaults($request->getParameter($param));
+    }
+    else
+    {
+      $form->setDefaults($request->getParameterHolder()->getAll());
+    }
     
     if(!method_exists($form, 'getDynamicValues'))
     {
+      $request->setAttribute('_sw_error', 'the '.$class.' does not have a getDynamicValues method');
+
+      return sfView::NONE;
+    }
+
+    $info = swToolboxFormHelper::getWidgetSchemaFromName($form, $name);   
+    
+    if(!$info['widgetSchema'])
+    {
+
       return sfView::NONE;
     }
     
-    $values = $form->getDynamicValues($from, $elements);
+    $values = $form->getDynamicValues($info['widgetSchema'], $info['field']);
     
-    echo json_encode($values);
+    $json_values = swToolboxFormHelper::generateValuesById($form->getWidgetSchema(), $values);
 
-    return sfView::NONE;
+    echo json_encode($json_values);
     
+    return sfView::NONE;
   }
 }
