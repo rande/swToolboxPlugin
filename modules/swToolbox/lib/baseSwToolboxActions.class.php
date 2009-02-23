@@ -73,15 +73,18 @@ class baseSwToolboxActions extends sfActions
       return sfView::NONE;
     }
     
+
     if(($param = swToolboxFormHelper::getBindParameter($form->getWidgetSchema()->getNameFormat())) !== null)
     {
-      $form->setDefaults($request->getParameter($param));
+      $values = $request->getParameter($param);
     }
     else
     {
-      $form->setDefaults($request->getParameterHolder()->getAll());
+      $values = $request->getParameterHolder()->getAll();
     }
     
+    $form->setDefaults($values);
+   
     if(!method_exists($form, 'getDynamicValues'))
     {
       $request->setAttribute('_sw_error', 'the '.$class.' does not have a getDynamicValues method');

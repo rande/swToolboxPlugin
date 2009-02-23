@@ -220,7 +220,7 @@ class swToolboxFormHelper
           $value = new swFormDynamicResult($value);
         }
         
-        $results[$id] = $value;
+        $results[$id] = $value->render($name, $widgetSchema);
       }
     }
     

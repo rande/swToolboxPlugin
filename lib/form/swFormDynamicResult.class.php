@@ -39,4 +39,26 @@ class swFormDynamicResult
     $this->value = $value;
     $this->options  = $options;
   }
+  
+  public function render($name, sfWidgetFormSchema $widgetSchema)
+  {
+    $options = $this->options;
+    
+    $values = array(
+      'value' => $this->value,
+    );
+    
+    if(isset($options['widget']))
+    {
+      $widget_name = $widgetSchema->generateName($name);
+      $attributes = array(
+        'name' => $widget_name
+      );
+      
+      $values['html'] = $options['widget']->render($name, $this->value, $attributes);
+      unset($options['widget']);
+    }
+    
+    return array_merge($values, $options);
+  }
 }
