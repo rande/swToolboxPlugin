@@ -2,7 +2,7 @@
 
 include(dirname(__FILE__).'/../bootstrap/unit.php');
 
-$t = new lime_test(18, new lime_output_color());
+$t = new lime_test(21, new lime_output_color());
 
 class NestedForm extends sfForm
 {
@@ -10,6 +10,18 @@ class NestedForm extends sfForm
   {
     $this->widgetSchema['titi'] = new sfWidgetFormInput;
     $this->widgetSchema['tutu'] = new sfWidgetFormInput;
+    
+    $this->widgets = array(
+      'sfWidgetFormInput'     =>  'sfWidgetFormInput',
+      'sfWidgetFormChoice'    =>  'sfWidgetFormChoice',
+      'sfWidgetFormTextarea'  =>  'sfWidgetFormTextarea'
+    );
+    
+    $this->widgetSchema['widget_types_from_nested_form'] = new sfWidgetFormChoice(array(
+       'choices'  => $this->widgets,
+       'expanded' => false,
+        'multiple' => true
+    ));
   }
 }
 
@@ -24,6 +36,18 @@ class PrimaryForm extends sfForm
     
     $this->embedForm('nested_form', new NestedForm);
     
+    $this->widgets = array(
+      'sfWidgetFormInput'     =>  'sfWidgetFormInput',
+      'sfWidgetFormChoice'    =>  'sfWidgetFormChoice',
+      'sfWidgetFormTextarea'  =>  'sfWidgetFormTextarea'
+    );
+    
+    $this->widgetSchema['widget_types'] = new sfWidgetFormChoice(array(
+       'choices'  => $this->widgets,
+       'expanded' => false,
+        'multiple' => true
+    ));
+    
     swToolboxFormHelper::resetFormLabels($this, array(
       'prefix'    => 'label_',
       'catalogue' => 'myCatalogue'
@@ -31,13 +55,17 @@ class PrimaryForm extends sfForm
     
     $name = $this->widgetSchema->generateName('nested_form[titi]');
     $widget = $this->widgetSchema['nested_form']->generateName('titi');
-    
-    swToolboxFormHelper::updateFormElement($this, array(
+
+    swToolboxFormHelper::addListener($this, array(
+      'field'        => 'widget_types'
+    ));
+        
+    swToolboxFormHelper::addListener($this, array(
       'widgetSchema' => $this->widgetSchema['nested_form'],
       'field'        => 'titi'
     ));
     
-    swToolboxFormHelper::updateFormElement($this, array(
+    swToolboxFormHelper::addListener($this, array(
       'widgetSchema' => $this->widgetSchema,
       'field'        => 'tata'
     ));
@@ -156,21 +184,13 @@ $correct_files = array (
 
 $t->cmp_ok(swToolboxFormHelper::convertFileInformation($_FILES), '==', $correct_files, 'nested tainted files ok');
 
-$result = '<input onchange="swToolbox.updateFormElements(&quot;plugins/swToolboxPlugin/test/unit/swFormTest.php/sw-toolbox/dynamic-values&quot;, this, &quot;PrimaryForm&quot;);" type="text" name="primary_form[tata]" id="primary_form_tata" />';
+$result = '<input onchange="swToolbox.updateFormElements(event, &quot;plugins/swToolboxPlugin/test/unit/swFormTest.php/sw-toolbox/dynamic-values&quot;, this, &quot;PrimaryForm&quot;);" type="text" name="primary_form[tata]" id="primary_form_tata" />';
 $t->cmp_ok($result, '==',$form['tata']->render(), 'Update Form Element onchange ok');
 
 $action = $context->getController()->getAction('swToolbox', 'retrieveDynamicValues');
 
+$params = array();
 $params['_sw_name'] = 'primary_form[tata]';
-$request = new sfWebRequest($context->getEventDispatcher(), $params, array(), array());
-$action->execute($request);
-$t->cmp_ok($request->getAttribute('_sw_error'), '==', 'unable to load the class', 'unable to load the class');
-
-$params['_sw_class'] = 'NestedForm';
-$request = new sfWebRequest($context->getEventDispatcher(), $params, array(), array());
-$action->execute($request);
-$t->cmp_ok($request->getAttribute('_sw_error'), '==', 'the NestedForm does not have a getDynamicValues method', 'the NestedForm does not have a getDynamicValues method');
-
 $params['_sw_class'] = 'PrimaryForm';
 $request = new sfWebRequest($context->getEventDispatcher(), $params, array(), array());
 
@@ -179,7 +199,7 @@ $return = $action->execute($request);
 $js_son_result = ob_get_contents();
 ob_end_clean();
 
-$js_son = '{"primary_form_nested_form_tutu":{"value":"Super !!","options":[]}}';
+$js_son = '{"primary_form_nested_form_tutu":{"value":"Super !!"}}';
 $t->cmp_ok($return, '==', sfView::NONE, 'action return sfView::NONE');
 $t->cmp_ok($js_son, '==', $js_son_result, 'json ok');
 
@@ -193,6 +213,7 @@ $name = 'titi';
 $info = swToolboxFormHelper::getWidgetSchemaFromName($nested_form, $name);
 $t->isa_ok($info['widgetSchema'], 'sfWidgetFormSchema', 'widgetSchema instance of sfWidgetFormSchema');
 
+
 $name = 'primary_form[nested_form][titu]';
 $info = swToolboxFormHelper::getWidgetSchemaFromName($form, $name);
 $t->ok($info['widgetSchema'] == null, 'titu does not exists');
@@ -201,9 +222,22 @@ $name = 'primary_form[nested_form_errro][titu]';
 $info = swToolboxFormHelper::getWidgetSchemaFromName($form, $name);
 $t->ok($info['widgetSchema'] == null, 'titu does not exists');
 
+$name = 'primary_form[widget_types][]';
+$info = swToolboxFormHelper::getWidgetSchemaFromName($form, $name);
+$t->ok($info['widgetSchema'] instanceof sfWidgetFormSchema, 'find the sfWidgetFormSchema instance');
+$t->cmp_ok($info['field'], '==', 'widget_types', 'field name : widget_types');
+
+
+$name = 'primary_form[nested_form][widget_types_from_nested_form][]';
+$info = swToolboxFormHelper::getWidgetSchemaFromName($form, $name);
+$t->ok($info['widgetSchema'] instanceof sfWidgetFormSchema, 'find the sfWidgetFormSchema instance');
+$t->cmp_ok($info['field'], '==', 'widget_types_from_nested_form', 'field name : widget_types_from_nested_form');
+
+
 $name = 'primary_form[tata]';
 $info = swToolboxFormHelper::getWidgetSchemaFromName($form, $name);
 $t->ok($info['widgetSchema'] instanceof sfWidgetFormSchema, 'widgetSchema instance of sfWidgetFormSchema');
+$t->cmp_ok($info['field'], '==', 'tata', 'field name : tata');
 
 $values = $form->getDynamicValues($info['widgetSchema'], $info['field']);
 $correct_values = array (
@@ -212,7 +246,7 @@ $correct_values = array (
     'tutu' =>  new swFormDynamicResult('Super !!'),
   ),
 );
-$t->cmp_ok($values, '==', $correct_values);
+$t->cmp_ok($values, '==', $correct_values, 'dynamic values ok');
 
 $name = 'primary_form[nested_form][titi]';
 $info = swToolboxFormHelper::getWidgetSchemaFromName($form, $name);
@@ -230,7 +264,7 @@ $correct_values = array (
 $t->cmp_ok($values, '==', $correct_values);
 
 $values = swToolboxFormHelper::generateValuesById($form->getWidgetSchema(), $correct_values);
-$json_result = '{"primary_form_nested_form_tutu":{"value":"salut toi !","options":[]},"primary_form_tata":{"value":"Ca va ?!","options":[]}}';
+$json_result = '{"primary_form_nested_form_tutu":{"value":"salut toi !"},"primary_form_tata":{"value":"Ca va ?!"}}';
 
 $t->cmp_ok(json_encode($values), '==', $json_result);
 
