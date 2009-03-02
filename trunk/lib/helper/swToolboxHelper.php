@@ -180,3 +180,34 @@ function sw_pager_navigation2($pager, $uri, $params = array(), $options = array(
  
   return $navigation;
 }
+
+/**
+ *
+ * Insert the google map api script into the page
+ **/
+function sw_add_google_map_api()
+{
+  
+  $config = sfConfig::get('app_swToolbox_api_loader');
+  if($config == null)
+  {
+    throw new RuntimeException('app_swToolbox_api_loader is null');
+  }
+  
+  $host = sfContext::getInstance()->getRequest()->getHost();
+  
+  if(!array_key_exists($host, $config))
+  {
+    throw new RuntimeException('no configuration set for the current host');
+  }
+  
+  $map_url = $config[$host]['google_map_url'];
+  $api_version = $config[$host]['google_map_version'];
+  $key     = $config[$host]['google_api_key'];
+  
+  echo sprintf('<script src="%s?file=api&amp;v=%s&amp;sensor=false&amp;key=%s" type="text/javascript"></script>',
+    $map_url,
+    $api_version,
+    $key
+  );
+}
