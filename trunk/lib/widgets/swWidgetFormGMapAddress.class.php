@@ -65,7 +65,7 @@ class swWidgetFormGMapAddress extends sfWidgetFormSchema
     // render address field
     $address_field = $subFormatter->formatRow(
       $subFormatter->generateLabel('address'), 
-      $this->renderField('address', $value['address'], $attributes, array()), 
+      $this->renderField('address', isset($value['address']) ? $value['address'] : null, $attributes, array()), 
       isset($errors['address']) ? $errors['address'] : array(),
       $this->getHelp($name)
     );
@@ -73,7 +73,7 @@ class swWidgetFormGMapAddress extends sfWidgetFormSchema
     // render lng field
     $lng_field = $subFormatter->formatRow(
       $subFormatter->generateLabel('lng'), 
-      $this->renderField('lng', $value['lng'], $attributes, array()), 
+      $this->renderField('lng', isset($value['lng']) ? $value['lng'] : null, $attributes, array()), 
       isset($errors['lng']) ? $errors['lng'] : array(),
       $this->getHelp($name)
     );
@@ -81,7 +81,7 @@ class swWidgetFormGMapAddress extends sfWidgetFormSchema
     // render lat field
     $lat_field = $subFormatter->formatRow(
       $subFormatter->generateLabel('lat'), 
-      $this->renderField('lat', $value['lat'], $attributes, array()), 
+      $this->renderField('lat', isset($value['lat']) ? $value['lat'] : null, $attributes, array()), 
       isset($errors['lat']) ? $errors['lat'] : array(),
       $this->getHelp($name)
     );
