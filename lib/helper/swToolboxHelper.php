@@ -181,33 +181,95 @@ function sw_pager_navigation2($pager, $uri, $params = array(), $options = array(
   return $navigation;
 }
 
+function sw_get_api_loader_config()
+{
+  static $config;
+  
+  if(is_null($config))
+  {
+    $config = sfConfig::get('app_swToolbox_api_loader');
+    if($config == null)
+    {
+      throw new RuntimeException('app_swToolbox_api_loader is null');
+    }
+
+    $host = sfContext::getInstance()->getRequest()->getHost();
+
+    if(!array_key_exists($host, $config))
+    {
+      throw new RuntimeException('no configuration set for the current host');
+    }
+   
+    $config = $config[$host];
+  }
+  
+  return $config;
+}
 /**
  *
  * Insert the google map api script into the page
  **/
-function sw_add_google_map_api()
+function sw_google_map_api()
 {
   
-  $config = sfConfig::get('app_swToolbox_api_loader');
-  if($config == null)
+  $config = sw_get_api_loader_config();
+  
+  if(!array_key_exists('google_api_key', $config))
   {
-    throw new RuntimeException('app_swToolbox_api_loader is null');
+    
+    return '';
   }
   
-  $host = sfContext::getInstance()->getRequest()->getHost();
+  $map_url = $config['google_map_url'];
+  $api_version = $config['google_map_version'];
+  $key     = $config['google_api_key'];
   
-  if(!array_key_exists($host, $config))
-  {
-    throw new RuntimeException('no configuration set for the current host');
-  }
-  
-  $map_url = $config[$host]['google_map_url'];
-  $api_version = $config[$host]['google_map_version'];
-  $key     = $config[$host]['google_api_key'];
-  
-  echo sprintf('<script src="%s?file=api&amp;v=%s&amp;sensor=false&amp;key=%s" type="text/javascript"></script>',
+  return sprintf('<script src="%s?file=api&amp;v=%s&amp;sensor=false&amp;key=%s" type="text/javascript"></script>',
     $map_url,
     $api_version,
     $key
   );
+}
+
+function sw_google_analytics($version = 'ga')
+{
+  $config = sw_get_api_loader_config();
+  
+  if(!array_key_exists('google_analytics', $config))
+  {
+    
+    return '';
+  }
+  
+  $keys = $config['google_analytics'];
+  if(!is_array($keys))
+  {
+    $keys = array($keys);
+  }
+  
+  $html = '';
+  if($version == 'urchin')
+  {
+    $html .= '<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>';
+    
+    foreach($keys as $key)
+    {
+      $html .= sprintf('<script type="text/javascript">_uacct = "%s"; urchinTracker();</script>', $key);
+    }
+  }
+  
+  if($version == 'ga')
+  {
+    $html .= '<script type="text/javascript">';
+    $html .= 'var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");';
+    $html .= 'document.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));';
+    $html .= '</script>';
+    
+    foreach($keys as $key)
+    {
+      $html .= sprintf('<script type="text/javascript">var pageTracker = _gat._getTracker("%s"); pageTracker._trackPageview();</script>', $key);
+    }
+  }
+  
+  return $html;
 }
