@@ -60,6 +60,12 @@ swGmapWidget.prototype.init = function(options) {
   this.geocoder.swGmapWidget = this;
   this.lookup.get(0).swGmapWidget = this;
   
+  // add the default location
+  var point = new GLatLng(this.lat.val(), this.lng.val());
+  var marker = new GMarker(point);
+  this.map.setCenter(point, 15);
+  this.map.addOverlay(marker);
+  
   // bind the move action on the map
   GEvent.addListener(this.map, "move", function() {
      var center = this.getCenter();
