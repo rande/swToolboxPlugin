@@ -25,6 +25,6 @@ sw_insert_google_api
             google_api_key: your_key_here
             google_map_version: 2.x
             google_map_url: http://maps.google.com/maps
-     
+            google_analytics: [ UA-KEY-ONE, UA-KEY-TWO]
   
   
