@@ -28,6 +28,21 @@
         <source>label_change_position</source>
         <target>Modifier la position</target>
       </trans-unit>
+      
+      <!-- Notice messages -->
+      <trans-unit id="1">
+        <source>notice_your_change_has_been_saved</source>
+        <target>Vos changements ont été enregistrés</target>
+      </trans-unit>
+      <trans-unit id="1">
+        <source>notice_an_error_occurred_while_saving</source>
+        <target>Une erreur est survenue pendant l'enregistrement !</target>
+      </trans-unit>
+      <trans-unit id="1">
+        <source>notice_element_deleted</source>
+        <target>Elément supprimé !</target>
+      </trans-unit>
+      
     </body>
   </file>
 </xliff>

@@ -273,3 +273,27 @@ function sw_google_analytics($version = 'ga')
   
   return $html;
 }
+
+function sw_get_user_notice()
+{
+  
+  $user = sfContext::getInstance()->getUser();
+  $html = '';
+  
+  if($user->hasFlash('notice-ok') || $user->hasFlash('sw-notice-ok'))
+  {
+    $html .= '<div class="sw-notice sw-notice-ok">' . $user->getFlash('notice-ok').$user->getFlash('sw-notice-ok').'</div>';
+  }
+  
+  if($user->hasFlash('notice-error') || $user->hasFlash('sw-notice-error'))
+  {
+    $html .= '<div class="sw-notice sw-notice-error">' . $user->getFlash('notice-error').$user->getFlash('sw-notice-error').'</div>';
+  }
+  
+  if(strlen($html) > 0)
+  {
+    $html = '<div class="sw-notices">'.$html.'</div>';
+  }
+  
+  return $html;
+}
