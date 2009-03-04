@@ -26,7 +26,7 @@
  *
  * @package    swToolboxPlugin
  * @subpackage widget
- * @author    Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
 class swWidgetFormGMapAddress extends sfWidgetFormSchema
@@ -35,8 +35,8 @@ class swWidgetFormGMapAddress extends sfWidgetFormSchema
   {
     $fields = array(
       'address' => new sfWidgetFormInput(array(), array('style' => 'width: 300px;')),
-      'lat'     => new sfWidgetFormInput(array(), array('readonly' => true)),
-      'lng'     => new sfWidgetFormInput(array(), array('readonly' => true)),
+      'lat'     => new sfWidgetFormInput(array(), array('readonly' => self::isXhtml() ? 'readonly' : true)),
+      'lng'     => new sfWidgetFormInput(array(), array('readonly' => self::isXhtml() ? 'readonly' : true)),
     );
     
     parent::__construct($fields, $options, $attributes, $labels, $helps);
@@ -89,7 +89,7 @@ class swWidgetFormGMapAddress extends sfWidgetFormSchema
     // render the javascript code for the widget
     $javascript = sprintf(
       '
-      <script>
+      <script type="text/javascript">
         jQuery(window).bind("load", function() {
           new swGmapWidget({ 
             lng: "%s", 
