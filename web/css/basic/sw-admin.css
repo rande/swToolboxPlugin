@@ -387,7 +387,42 @@ div.sw-form-actions
   line-height: 30px;
 }
 
+/* sfForm Error */
+ul.error_list 
+{
+  background: red;
+  padding: 3px;
+  font-weight: bold;
+}
+
+
 .ui-tabs-panel
 {
   padding: 0;
+}
+
+div.sw-notice
+{
+  width: 300px;
+  padding: 10px;
+  text-align: left;
+  font-weight: bold;
+  margin-left: 250px;
+}
+
+div.sw-notice-error
+{
+  border: 2px solid #AF1515;
+  background: #FF3E2F;
+}
+
+div.sw-notice-ok
+{
+  border: 2px solid #066500;
+  background: #00D025;
+}
+
+div.sw-notices
+{
+  text-align: center; 
 }
