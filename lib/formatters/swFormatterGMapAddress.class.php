@@ -24,7 +24,7 @@
 class swFormatterGMapAddress extends sfWidgetFormSchemaFormatter
 {
   protected
-    $rowFormat       = "%error%%label%\n  %field%%help%\n%hidden_fields%\n",
+    $rowFormat       = "%error%%label%\n  %field%%help%\n",
     $errorRowFormat  = "\n%errors%\n",
     $errorListFormatInARow     = "  <span class=\"error_list\">\n%errors%  </span>\n",
     $errorRowFormatInARow      = "  %error%\n",
