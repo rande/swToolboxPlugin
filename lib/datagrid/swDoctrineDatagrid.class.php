@@ -42,8 +42,8 @@ abstract class swDoctrineDatagrid extends sfForm
   {
     parent::__construct(array(), $options, $CSRFSecret);
 
-    $params['sort_by'] = (isset($params['sort_by']) ? $params['sort_by'] : null);
-    $params['sort_order'] = (isset($params['sort_order']) ? $params['sort_order'] : null);
+    $params['sort_by'] = isset($params['sort_by']) ? $params['sort_by'] : null;
+    $params['sort_order'] = isset($params['sort_order']) ? $params['sort_order'] : null;
    
     // init values
     $defaults = $this->prepareDefaultValues($params);
@@ -141,7 +141,7 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->widgetSchema->getFormFormatter()->setTranslationCatalogue('datagrid');
     
     $this->addFilter('sort_by', null, new sfWidgetFormInputHidden, new sfValidatorPass);
-    $this->addFilter('sort_order', null, new sfWidgetFormInputHidden, new sfValidatorPass);
+    $this->addFilter('sort_order', null, new sfWidgetFormInputHidden, new swValidatorText(array('required' => false)));
     
     $this->setupDatagrid();
   }
@@ -154,7 +154,12 @@ abstract class swDoctrineDatagrid extends sfForm
   
   public function prepareDefaultValues(array $params)
   {
-    $session_values = $this->getStoredValues();
+    $session_values = array();
+    
+    if($this->getOption('store', false))
+    {
+      $session_values = $this->getStoredValues();
+    }
 
     if(array_key_exists('reset', $params))
     {
@@ -162,7 +167,7 @@ abstract class swDoctrineDatagrid extends sfForm
       $session_values = $params = array();
     }
 
-    $base = count($params) == 0 ? $session_values : $params;
+    $base = count($params) == 2 ? $session_values : $params;
     
     $filters = array();
     
@@ -170,7 +175,7 @@ abstract class swDoctrineDatagrid extends sfForm
     {
       $filters[$name] = isset($base[$name]) ? $base[$name] : $value;
     }
-    
+
     return $filters;
   }
 
@@ -192,6 +197,7 @@ abstract class swDoctrineDatagrid extends sfForm
 
   public function setStoredValues($values)
   {
+    
     if($this->getOption('store', false) == false)
     {
       
