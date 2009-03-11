@@ -105,7 +105,7 @@ class swToolbox
     {
       case 'sendEmail':
       case 'sendMail':
-        $event->setReturnValue(self::sendMail($event));
+        $event->setReturnValue(self::sendMailFromEvent($event));
         break;
     }
 
@@ -141,24 +141,11 @@ class swToolbox
     self::$zendLoaded = true;
   }
   
-  static public function sendMail(sfEvent $event)
+  static public function sendMail($moduleName, $actionName, $vars)
   {
-    $event->setProcessed(true);
-    
-    // 1. RETRIEVE PARAMETERS & VARIABLES
-    $context = sfContext::getInstance();
-    $params = $event->getParameters();
-    if(count($params['arguments']) == 3)
-    {
-      list($moduleName, $actionName, $vars) = $params['arguments'];
-    }
-    else
-    {
-      list($moduleName, $actionName) = $params['arguments'];
-    }
-    
     $config = sfConfig::get('app_swToolbox_mail');
-    
+    $context = sfContext::getInstance();
+        
     // 2. REGISTER ZEND CLASS
     $context->getConfiguration()->registerZend();
     
@@ -254,5 +241,23 @@ class swToolbox
     $action->mail->send($transport_class);
     
     return $action->mail;
+  }
+  
+  static public function sendMailFromEvent(sfEvent $event)
+  {
+    $event->setProcessed(true);
+    
+    $params = $event->getParameters();
+    if(count($params['arguments']) == 3)
+    {
+      list($moduleName, $actionName, $vars) = $params['arguments'];
+    }
+    else
+    {
+      list($moduleName, $actionName) = $params['arguments'];
+      $vars = array();
+    }
+    
+    return self::sendMail($moduleName, $actionName, $vars);
   }
 }
