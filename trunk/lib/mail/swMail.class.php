@@ -43,12 +43,18 @@ class swMail extends Zend_Mail
   
   public function quickView()
   {
-    $mail = "q";
+    $mail = "";
     foreach($this->getParts() as $part)
     {
       $mail .= $part->getContent();
     }
     
     return $mail;
+  }
+  
+  public function __toString()
+  {
+    
+    return $this->quickView();
   }
 }
