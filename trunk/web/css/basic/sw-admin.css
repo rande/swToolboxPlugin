@@ -46,7 +46,7 @@ body, td
   margin: 0;
   padding: 0;
   font-family: Arial, Verdana, sans-serif;
-  font-size: 11px;
+  font-size: 0.8em;
   background-color: #fff;
   
 }
@@ -65,20 +65,30 @@ div.sw-base-admin-list
 }
 
 /* GENERAL */
-span.sw-base-title-actions
+a.sw-base-title-actions
 {
   float: right;
-  margin-top: -10px;
+  margin-top: -18px;
+  text-transform: lowercase;
+  font-size: 0.8em;
+  color: black;
+  padding: 0.4em 1em 0.4em 20px;
+  position: relative;
 }
 
-span.sw-base-title-actions a
+a.sw-base-title-actions span.ui-icon
 {
-  text-transform: lowercase;
-  font-size: 10px;
-  color: black;
+  position: absolute;
+  left: 0.2em;
+  margin:-2px 5px 0 0;
 }
   
 /* MODULE MENU*/
+div.sw-base-admin-modules-main-menu
+{
+  margin-bottom: 5px;
+}
+
 div.sw-base-admin-modules-main-menu ul
 {
   list-style: none;
@@ -88,7 +98,6 @@ div.sw-base-admin-modules-main-menu li
 {
   float: left;
   display: block;
-  border-right: 2px solid #ccc;
   padding: 3px;
 }
 
@@ -100,7 +109,7 @@ div.sw-base-admin-modules-main-menu li.last
 
 div.sw-base-admin-modules-main-menu a
 {
-  font-size: 16px;
+  font-size: 1.3em;
   padding: 4px;
 }
 
@@ -118,6 +127,8 @@ div.sw-base-admin-modules-main-menu a:hover
 div.sw-base-admin-modules-main-menu-separator
 {
   clear: both;
+  line-height: 0px;
+  display: none;
 }
 
 /* MAIN SUBMENU */
@@ -270,7 +281,6 @@ td.sw-base-admin-table-pager a
   padding-bottom: 3px;
   border: 1px solid #eee;
   line-height: 20px;
-  font-size:12px;
 }
 
 td.sw-base-admin-table-pager a:hover
@@ -283,13 +293,12 @@ div.sw-base-left-actions
 {
   float: left;
   width: 190px;
-  font-size: 14px;
+
 }
 
 div.sw-base-left-actions li
 {
   list-style: none;
-  border-bottom: 1px dashed #CCCCCC;
   margin-top: 2px;
   margin-bottom: 2px;
 }
@@ -320,9 +329,9 @@ div.sw-base-left-actions a
 
 div.sw-base-container-column
 {
-  border-left: 1px dashed #ccc;
   float: left;
   width: 750px;
+  margin-left: 5px;
 }
 
 div.sw-base-container-column h3
@@ -337,6 +346,7 @@ div.sw-base-container-column h3
 div.sw-base-container-column h1
 {
   clear: both;
+  padding-left: 5px;
 }
 
 /* LIST LABEL, ul > li*/
@@ -356,9 +366,6 @@ ul.sw-base-admin-list-labels li
 ul.sw-base-admin-list-labels span
 {
   font-weight: bold;
-  width: 75px;
-  display: block;
-  float: left;
 }
 
 .sw-html-content 
@@ -379,6 +386,10 @@ ul.sw-base-admin-list-labels span
   margin:-8px 5px 0 0;
   position:absolute;
   top:50%;
+}
+
+button.sw-ui-btn-link span.ui-icon {
+  margin-left: -22px;
 }
 
 div.sw-form-actions
