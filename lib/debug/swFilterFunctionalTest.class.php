@@ -46,6 +46,10 @@ class swFilterFunctionalTest extends sfFilter
       {
         $link .= '?';
       }
+      else
+      {
+        $link .= '&';
+      }
 
       $link .= '_sw_func_link='.$matches[6];
     }
