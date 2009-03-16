@@ -40,8 +40,13 @@ abstract class swDoctrineDatagrid extends sfForm
   
   public function __construct($params = array(), $options = array(), $CSRFSecret = null)
   {
+    // validator options
+    $options['allow_extra_fields'] = isset($options['allow_extra_fields']) ? $options['allow_extra_fields'] : true;
+    $options['filter_extra_fields'] = isset($options['filter_extra_fields']) ? $options['filter_extra_fields'] : false;
+    
     parent::__construct(array(), $options, $CSRFSecret);
 
+    // init sort features
     $params['sort_by'] = isset($params['sort_by']) ? $params['sort_by'] : null;
     $params['sort_order'] = isset($params['sort_order']) ? $params['sort_order'] : null;
    
@@ -140,6 +145,9 @@ abstract class swDoctrineDatagrid extends sfForm
     
     $this->widgetSchema->getFormFormatter()->setTranslationCatalogue('datagrid');
     
+    $this->validatorSchema->setOption('allow_extra_fields', $this->getOption('allow_extra_fields'));
+    $this->validatorSchema->setOption('filter_extra_fields', $this->getOption('filter_extra_fields'));
+    
     $this->addFilter('sort_by', null, new sfWidgetFormInputHidden, new sfValidatorPass);
     $this->addFilter('sort_order', null, new sfWidgetFormInputHidden, new swValidatorText(array('required' => false)));
     
@@ -214,6 +222,29 @@ abstract class swDoctrineDatagrid extends sfForm
     
   }
 
+  public function useOnly(array $fields = array(), $use_order = false)
+  {
+    
+    foreach($this as $field => $widget)
+    {
+      if(!in_array($field, $fields))
+      {
+
+        $this->offsetUnset($field);
+
+        continue;
+      }
+    }
+    
+    if($use_order)
+    {
+      foreach($fields as $pos => $field)
+      {
+        $this->widgetSchema->moveField($field, sfWidgetFormSchema::LAST);
+      }
+    }
+  }
+  
   abstract function getModelName();
 
   function getQueryParameters($merge = array())
