@@ -60,6 +60,7 @@ abstract class swDoctrineDatagrid extends sfForm
 
   public function addFilter($name, $default_value, $widget, $validator, $label = null)
   {
+    
     $this->filters[$name] = $default_value;
     $this->widgetSchema[$name] = $widget;
     $this->validatorSchema[$name] = $validator;
@@ -79,6 +80,8 @@ abstract class swDoctrineDatagrid extends sfForm
   
   public function getSortableFields()
   {
+    $fields = array();
+    
     foreach ($this->widgetSchema->getFields() as $name => $widget)
     {
       if(in_array($name, array('sort_by', 'sort_order')))
@@ -148,8 +151,29 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->validatorSchema->setOption('allow_extra_fields', $this->getOption('allow_extra_fields'));
     $this->validatorSchema->setOption('filter_extra_fields', $this->getOption('filter_extra_fields'));
     
-    $this->addFilter('sort_by', null, new sfWidgetFormInputHidden, new sfValidatorPass);
-    $this->addFilter('sort_order', null, new sfWidgetFormInputHidden, new swValidatorText(array('required' => false)));
+    $this->addFilter(
+      'sort_by', 
+      null, 
+      new sfWidgetFormSelect(array(
+        'choices' => $this->getSortableFields()
+      )), 
+      new sfValidatorChoice(array(
+        'choices' => array_keys($this->getSortableFields()),
+        'required' => false
+      ))
+    );
+    
+    $this->addFilter(
+      'sort_order', 
+      null,
+      new sfWidgetFormSelect(array(
+        'choices' => array('ASC' => 'ASC', 'DESC' => 'DESC')
+      )), 
+      new sfValidatorChoice(array(
+        'choices' => array('ASC', 'DESC'),
+        'required' => false
+      ))
+    );
     
     $this->setupDatagrid();
   }
@@ -157,6 +181,7 @@ abstract class swDoctrineDatagrid extends sfForm
   public function init()
   {
     $this->bind($this->getDefaults());
+
     $this->preparePager();
   }
   
@@ -227,7 +252,7 @@ abstract class swDoctrineDatagrid extends sfForm
     
     foreach($this as $field => $widget)
     {
-      if(!in_array($field, $fields))
+      if(!in_array($field, $fields) && !in_array($field, array('sort_by', 'sort_order')))
       {
 
         $this->offsetUnset($field);
