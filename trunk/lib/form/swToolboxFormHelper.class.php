@@ -109,15 +109,19 @@ class swToolboxFormHelper
    */
   static public function resetFormLabels(sfForm $form, array $options = array())
   {
-    $prefix = isset($options['prefix']) ? $options['prefix'] : '';
-    $catalogue = isset($options['catalogue']) ? $options['catalogue'] : null;
+    $prefix = isset($options['prefix']) ? $options['prefix'] : false;
+    $catalogue = isset($options['catalogue']) ? $options['catalogue'] : false;
     
-    if($catalogue)
+    if($catalogue !== false)
     {
       $form->getWidgetSchema()->getFormFormatter()->setTranslationCatalogue($catalogue);
     }
     
-    self::resetSchemaLabels($form->getWidgetSchema(), $prefix);
+    if($prefix !== false)
+    {
+      self::resetSchemaLabels($form->getWidgetSchema(), $prefix);
+    }
+    
   }
   
   static private function resetSchemaLabels(sfWidgetFormSchema $widget_schema, $prefix)
@@ -204,6 +208,11 @@ class swToolboxFormHelper
   
   public static function generateValuesById($widgetSchema, $values, &$results = array())
   {
+    if(!is_array($values))
+    {
+      $values = array();
+    }
+    
     foreach($values as $name => $value)
     {
       if($widgetSchema[$name] instanceof sfWidgetFormSchema)
