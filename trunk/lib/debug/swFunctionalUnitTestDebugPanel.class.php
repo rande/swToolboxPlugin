@@ -47,7 +47,7 @@ class swFunctionalUnitTestDebugPanel extends sfWebDebugPanel
   {
     
     return '
-      <div id="sfWebDebugDatabaseLogs">'.
+      <div id="sfDebugPanelFunctionalUnitTest">'.
       "<a href='?_sw_func_reset=1'>Reset</a> - ".
       (!sfContext::getInstance()->getUser()->getAttribute('sw_func_enabled', false, 'swToolbox') ?
       "<a href='?_sw_func_enabled=1'>Activate</a>" :
