@@ -66,6 +66,16 @@ class swQuery extends Doctrine_Query
   }
   
   /**
+   * Retrieve the select part of current DQL
+   *
+   * @return array of selected elements
+   */
+  public function getSelect()
+  {
+    return $this->_dqlParts['select'];
+  }
+  
+  /**
    * Execute the native _processDqlQueryPart method and append the raw SQL
    *
    * @see Doctrine_Query
