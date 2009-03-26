@@ -61,7 +61,7 @@ class swToolbox
   static function updateFormElements(sfForm $form, sfWidget $widget, array $elements)
   {
     
-    throw new RuntimeExceptions('This method is now deprecated, use swToolboxFormHelper::updateFormElement');
+    throw new RuntimeException('Please update the '.get_class($form).' sfForm class. This method is now deprecated, use swToolboxFormHelper::updateFormElement');
   }
   
   /**

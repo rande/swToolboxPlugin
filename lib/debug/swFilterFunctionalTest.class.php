@@ -128,7 +128,7 @@ class swFilterFunctionalTest extends sfFilter
           $this->create('click', $from_link, $_GET);
         $this->end();
 
-        $this->raw("  /* " . $this->createPHP('call', 'get', $url, $_GET))." */ ";
+        $this->raw("  /* " . $this->createPHP('call', 'get', $url, $_GET)." */ ");
         $this->raw(";\n\n");
         $this->raw("\$browser");
       }
