@@ -242,7 +242,8 @@
 			else
 			 $(control.inputs).removeAttr('checked');
 			// Show/hide 'cancel' button
-			control.cancel[control.readOnly || control.required?'hide':'show']();
+
+			control.cancel[control.readOnly || control.required || control.nocancel == 1?'hide':'show']();
 			// Add/remove read-only classes to remove hand pointer
 			this.siblings()[control.readOnly?'addClass':'removeClass']('star-rating-readonly');
 		},// $.fn.rating.draw
