@@ -138,6 +138,29 @@ class swToolboxFormHelper
     }
   }
   
+  static public function generateJsonInformation($form)
+  {
+    $errors = array();
+    $bound = $form->isBound();
+    
+    if(count($form->getErrorSchema()->getErrors()) > 0)
+    {
+      foreach($form->getErrorSchema()->getErrors() as $field => $error)
+      {
+        $errors[$field] = $error->getMessage();
+      }
+    }
+    
+    $information = array(
+      'hasErrors' => count($form->getErrorSchema()->getErrors()) > 0 ? true : false,
+      'errors' => $errors,
+      'bound'  => $bound,
+      'values' => $form->getValues(),
+      //'default' => $form->getDefaults(),
+    );
+    
+    return json_encode($information);
+  }
   /**
    * return the format used in the bind action
    *
