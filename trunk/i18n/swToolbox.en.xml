@@ -43,5 +43,21 @@
       <source>notice_element_deleted</source>
       <target>Element deleted !</target>
     </trans-unit>
+    
+    <!-- Trilean Selector -->
+    <trans-unit id="1">
+      <source>label_no</source>
+      <target>No</target>
+    </trans-unit>
+    <trans-unit id="1">
+      <source>label_yes</source>
+      <target>Yes</target>
+    </trans-unit>
+    <trans-unit id="1">
+      <source>label_not_defined</source>
+      <target>Not defined</target>
+    </trans-unit>
+
+    
   </file>
 </xliff>
