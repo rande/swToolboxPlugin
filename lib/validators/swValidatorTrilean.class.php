@@ -51,7 +51,7 @@ class swValidatorTrilean extends sfValidatorBoolean
   
   public function isEmpty($value)
   {
-    
+
     return false;
   }
 }

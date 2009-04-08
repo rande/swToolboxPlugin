@@ -43,6 +43,19 @@
         <target>Elément supprimé !</target>
       </trans-unit>
       
+      <!-- Trilean Selector -->
+      <trans-unit id="1">
+        <source>label_no</source>
+        <target>Non</target>
+      </trans-unit>
+      <trans-unit id="1">
+        <source>label_yes</source>
+        <target>Oui</target>
+      </trans-unit>
+      <trans-unit id="1">
+        <source>label_not_defined</source>
+        <target>Pas définie</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

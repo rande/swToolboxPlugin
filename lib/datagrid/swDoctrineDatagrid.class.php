@@ -187,6 +187,7 @@ abstract class swDoctrineDatagrid extends sfForm
   
   public function prepareDefaultValues(array $params)
   {
+
     $session_values = array();
     
     if($this->getOption('store', false))
@@ -206,7 +207,7 @@ abstract class swDoctrineDatagrid extends sfForm
     
     foreach($this->filters as $name => $value)
     {
-      $filters[$name] = isset($base[$name]) ? $base[$name] : $value;
+      $filters[$name] = array_key_exists($name, $base) ? $base[$name] : $value;
     }
 
     return $filters;

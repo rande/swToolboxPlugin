@@ -161,6 +161,7 @@ class swToolboxFormHelper
     
     return json_encode($information);
   }
+  
   /**
    * return the format used in the bind action
    *
@@ -257,5 +258,35 @@ class swToolboxFormHelper
     }
     
     return $results;
+  }
+  
+  /**
+   * Force the form to only use specifics fieds and optionaly reorder the form
+   *
+   * @param sfForm $form
+   * @param array $fields
+   * @param boolan $use_order
+   */
+  public static function useOnly(sfForm $form, array $fields = array(), $use_order = false)
+  {
+    
+    foreach($form as $field => $widget)
+    {
+      if(!in_array($field, $fields) && !in_array($field, array('sort_by', 'sort_order')))
+      {
+
+        $form->offsetUnset($field);
+
+        continue;
+      }
+    }
+    
+    if($use_order)
+    {
+      foreach($fields as $pos => $field)
+      {
+        $form->getWidgetSchema()->moveField($field, sfWidgetFormSchema::LAST);
+      }
+    }
   }
 }
