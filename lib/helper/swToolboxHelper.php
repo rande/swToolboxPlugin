@@ -220,9 +220,9 @@ function sw_google_map_api()
     return '';
   }
   
-  $map_url = $config['google_map_url'];
+  $map_url     = $config['google_map_url'];
   $api_version = $config['google_map_version'];
-  $key     = $config['google_api_key'];
+  $key         = $config['google_api_key'];
   
   return sprintf('<script src="%s?file=api&amp;v=%s&amp;sensor=false&amp;key=%s" type="text/javascript"></script>',
     $map_url,
@@ -296,4 +296,46 @@ function sw_get_user_notice()
   }
   
   return $html;
+}
+
+function sw_user_context_var($varname)
+{
+  static 
+    $config, 
+    $context,
+    $cacheable;
+  
+  if($config === null)
+  {
+    $config      = sfConfig::get('app_swToolbox_swUserContextCacheFilter', false);
+    $context     = sfContext::getInstance();
+    $internalUri = $context->getRouting()->getCurrentInternalUri();
+    $cacheable   = $context->getViewCacheManager()->isCacheable($internalUri);
+  }
+  
+  if($config === false)
+  {
+    
+    return $varname;
+  }
+
+  $varname_coded = '##SW_CACHE_'.strtoupper($varname).'##';
+  
+  if(sfConfig::get('sf_cache') && $cacheable)
+  {
+    
+    return $varname_coded;
+  }
+  
+  $common = isset($config['common']) ? $config['common'] : null;
+  
+  if(!$common || !isset($common['callback']))
+  {
+    
+    return;
+  }
+  
+  $vars = call_user_func($common['callback'], $context);
+  
+  return isset($vars[$varname]) ? $vars[$varname] : null;
 }
