@@ -49,7 +49,7 @@ class swWidgetFormTrilean extends sfWidgetFormChoice
     
     $options['choices'] = isset($options['choices']) ? $options['choices'] : $choices;
     
-    parent::configure($options, $attributes);
+    parent::__construct($options, $attributes);
   }
 
 }
