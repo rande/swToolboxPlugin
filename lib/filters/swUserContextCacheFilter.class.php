@@ -162,6 +162,6 @@ class swUserContextCacheFilter extends sfCacheFilter
     
     $varname = isset($options['varname']) ? $options['varname'] : 'user_context';
     
-    return $content . "\n<script>var $varname = '$vars'</script>";
+    return $content . "\n<script>var $varname = $vars</script>";
   }
 }
