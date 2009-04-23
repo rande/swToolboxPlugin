@@ -52,6 +52,8 @@ class swToolbox
           preg_replace('/::/', '/', $text)))
     ));
 
+    $text = str_replace(array('/'), array('-'), $text);
+    
     return trim($text);
   }
   
