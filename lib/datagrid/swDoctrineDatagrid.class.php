@@ -38,6 +38,11 @@ abstract class swDoctrineDatagrid extends sfForm
   protected $filters = array();
   protected $schema_format_name = 'filters';
   
+  
+  /**
+   * @see sfFrom
+   * 
+   */
   public function __construct($params = array(), $options = array(), $CSRFSecret = null)
   {
     // validator options
@@ -58,6 +63,17 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->init();
   }
 
+  /**
+   * 
+   * add a new filter field into the datagrid
+   * 
+   * @param string $name name of the field
+   * @param mixed $default_value 
+   * @param sfFormWidget $widget
+   * @param sfValidatorBase $validator
+   * @param string $label
+   * 
+   */
   public function addFilter($name, $default_value, $widget, $validator, $label = null)
   {
     
@@ -72,12 +88,21 @@ abstract class swDoctrineDatagrid extends sfForm
   }
   
   
+  /**
+   * 
+   * @param $field
+   * @return boolean true if the sortable field exists
+   */
   public function hasSortableField($field)
   {
     
     return array_key_exists($field, $this->getSortableFields());
   }
   
+  /**
+   * 
+   * @return array of sortable field
+   */
   public function getSortableFields()
   {
     $fields = array();
@@ -96,6 +121,15 @@ abstract class swDoctrineDatagrid extends sfForm
     return $fields;
   }
   
+  /**
+   * 
+   * Get the url for the current sort field
+   * 
+   * @param $url
+   * @param $sort_by
+   * @param $sort_order
+   * @return unknown_type
+   */
   public function getSortUrl($url, $sort_by, $sort_order = null)
   {
 
@@ -118,6 +152,17 @@ abstract class swDoctrineDatagrid extends sfForm
     return url_for($url);
   }
   
+  /**
+   * 
+   * get the link for the current sort field
+   * 
+   * @param $text
+   * @param $url
+   * @param $sort_by
+   * @param $sort_order
+   * @param $options
+   * @return unknown_type
+   */
   public function getSortLink($text, $url, $sort_by, $sort_order = null, $options = array())
   {
     if(!$this->hasSortableField($sort_by))
@@ -139,6 +184,10 @@ abstract class swDoctrineDatagrid extends sfForm
     return link_to($text, $url , $options);
   }
   
+  /**
+   * 
+   * @see vendor/symfony/lib/form/sfForm#setup()
+   */
   public function setup()
   {
     // format the datagrid
@@ -178,6 +227,12 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->setupDatagrid();
   }
 
+  /**
+   * 
+   * init the datagrid with the values
+   * 
+   * @return unknown_type
+   */
   public function init()
   {
     $this->bind($this->getDefaults());
@@ -185,6 +240,12 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->preparePager();
   }
   
+  /**
+   * define the values to use in the datagrid
+   * 
+   * @param $params
+   * @return unknown_type
+   */
   public function prepareDefaultValues(array $params)
   {
 
@@ -321,6 +382,18 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->pager->init();
   }
 
+  /**
+   * return the yaml version of the current values
+   * 
+   * @return unknown_type
+   */
+  public function getYaml($inline = 2, $indent = 0)
+  {
+    $yaml = new sfYamlDumper();
+
+    return $yaml->dump($this->getValues(), $inline, $indent);
+  }
+  
   public function getPager()
   {
     
