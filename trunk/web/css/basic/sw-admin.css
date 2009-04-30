@@ -437,3 +437,14 @@ div.sw-notices
 {
   text-align: center; 
 }
+
+
+div.yaml 
+{
+  white-space: pre ;
+  border: 1px solid #ccc;
+  background: #eee;
+  padding: 5px;
+  font-size: 12px;
+  font-family: "Courier New", Courier, monospace;
+}
