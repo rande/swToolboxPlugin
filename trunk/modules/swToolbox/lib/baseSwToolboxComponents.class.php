@@ -32,6 +32,12 @@ class baseSwToolboxComponents extends sfComponents
 {
   public function executeDisplayBreadcrumb($request)
   {
-     
+    $breadcrumb = new swBreadcrumb;
+    
+    // no breadcrumb has been defined
+    if(count(swBreadcrumb::get()) == 0)
+    {
+      $breadcrumb->define();
+    }
   }
 }

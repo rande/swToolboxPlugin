@@ -27,28 +27,6 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swBreadcrumb {
+class swBreadcrumb extends baseswBreadcrumb {
 
-  private static $entry = array();
-
-  public static function add($breadcrumb = null, $url = null, $title = null, $image = null) {
-    self::$entry[] = array(
-      'breadcrumb' => $breadcrumb, 
-      'url' => $url, 
-      'title' => $title ? $title : strip_tags($breadcrumb), 
-      'image' => $image
-    );
-  }
-
-  public static function get() {
-    return self::$entry;
-  }
-
-  public static function reset(){
-    self::$entry = array();
-  }
-
-  public static function clean(){
-    self::reset();
-  }
 }

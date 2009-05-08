@@ -3,7 +3,7 @@
  *  $Id$
  *
  * (c) 2008 Thomas Rabaix <thomas.rabaix@soleoweb.com>
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -23,53 +23,50 @@
 
 /**
  *
- * @package    swToolboxPlugin
- * @subpackage mail
+ * @package    swBreadcrumb
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swMail extends Zend_Mail
-{
-  public function __construct($charset = null)
+abstract class baseswBreadcrumb {
+
+  private static $entry = array();
+
+  public static function add($breadcrumb = null, $url = null, $title = null, $image = null) {
+    self::$entry[] = array(
+      'breadcrumb' => $breadcrumb, 
+      'url' => $url, 
+      'title' => $title ? $title : strip_tags($breadcrumb), 
+      'image' => $image
+    );
+  }
+
+  public static function get() {
+    return self::$entry;
+  }
+
+  public static function reset(){
+    self::$entry = array();
+  }
+
+  public static function clean(){
+    self::reset();
+  }
+
+
+  public function define()
   {
-    if(is_null($charset))
+    $action_stack = sfContext::getInstance()->getController()->getActionStack()->getLastEntry();
+
+    $module_name = $action_stack->getModuleName();
+    $action_name = $action_stack->getActionName();
+
+    $function_name = $module_name.'_'.$action_name;
+
+    if(method_exists($this, $function_name))
     {
-      $config = sfConfig::get('app_swToolbox_mail');
-      $charset = $config['charset'];
+      call_user_func(array($this, $function_name), $action_stack->getActionInstance());
     }
-    
-    parent::__construct($charset);
   }
-  
-  public function quickView()
-  {
-    $mail = "";
-    foreach($this->getParts() as $part)
-    {
-      $mail .= $part->getContent();
-    }
-    
-    return $mail;
-  }
-  
-  public function __toString()
-  {
-    
-    return $this->quickView();
-  }
-  
-  public function getRecipientsTo()
-  {
-    return $this->_to;
-  }
-  
-  public function getRecipientsBcc()
-  {
-    return $this->_to;
-  }
-  
-  public function getRecipientsCc()
-  {
-    return $this->_to;
-  }
+
+
 }
