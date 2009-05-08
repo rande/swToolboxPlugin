@@ -21,5 +21,10 @@
  */
  
 jQuery(window).bind('load', function(){
+  
+  // compatible with 1.2
   jQuery("ul.ui-tabs-nav").tabs();
+  
+  // new with 1.3
+  jQuery('div.ui-auto-tabs').tabs();
 })

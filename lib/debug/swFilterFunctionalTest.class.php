@@ -33,8 +33,11 @@ class swFilterFunctionalTest extends sfFilter
 {
 
   private static $code = "";
+
   protected $with = null;
-   
+
+  const LINK_EREG = '/<a(.*?)href=(\'|")([^> ]*)(\'|")([^>]*)>(.*?)<\/a>/i';
+
   public function linkCallback($matches)
   {
 
@@ -51,7 +54,18 @@ class swFilterFunctionalTest extends sfFilter
         $link .= '&';
       }
 
-      $link .= '_sw_func_link='.$matches[6];
+      $link_content = $matches[6];
+      if(strpos($link_content, '<img') !== false)
+      {
+        preg_match('/alt=(\'|")([^$1]*)(\'|")/i', $link_content, $alt_result);
+
+        if(isset($alt_result[2])) 
+        {
+          $link_content = $alt_result[2];
+        }
+      } 
+
+      $link .= '_sw_func_link=' . $link_content;
     }
 
     return sprintf('<a%shref=%s%s%s%s>%s</a>',
@@ -149,7 +163,13 @@ class swFilterFunctionalTest extends sfFilter
       else if($request->isMethod('post'))
       {
         $this->raw("\$browser");
-        $this->create('call', $url, 'post', $request->getParameterHolder()->getAll());
+        $this->create('call', $url, 'post', $this->getVarsFromRequest($request));
+        $this->raw(
+          "  /* " . 
+          $this->createPHP('get', $url) . "\n" .
+          $this->createPHP('click', 'alt or value of submit here', $this->getVarsFromRequest($request)) .
+          " */ "
+        );
       }
       else
       {
@@ -164,13 +184,16 @@ class swFilterFunctionalTest extends sfFilter
       $this->raw("\$browser");
     }
     
-    $this->with('request');
+    $this->with('request');    
       if(!$is_first_call)
       {
         $this->create('isForwardedTo', $action->getModuleName(), $action->getActionName());
+      } 
+      else
+      {
+        $this->create('isParameter', 'module', $action->getModuleName());
+        $this->create('isParameter', 'action', $action->getActionName());        
       }
-      $this->create('isParameter', 'module', $action->getModuleName());
-      $this->create('isParameter', 'action', $action->getActionName());
     $this->end();
 
 
@@ -190,13 +213,25 @@ class swFilterFunctionalTest extends sfFilter
     $content = $response->getContent();
 
     // add link name
-    $content = preg_replace_callback('/<a(.*?)href=(\'|")([^> ]*)(\'|")([^>]*)>(.*?)<\/a>/i', array($this, 'linkCallback'), $content);
+    $content = preg_replace_callback(self::LINK_EREG, array($this, 'linkCallback'), $content);
 
     $response->setContent($content);
 
     $user->setAttribute('sw_func_code', self::getRawPhp(), 'swToolbox');
   }
 
+  public function getVarsFromRequest($request)
+  {
+    $vars = $request->getParameterHolder()->getAll();
+    
+    unset(
+      $vars['module'],
+      $vars['action']
+    );
+    
+    return $vars;
+  }
+  
   public function with($name)
   {
     $this->with = $name;
