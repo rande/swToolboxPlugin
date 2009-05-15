@@ -1,0 +1,34 @@
+Cross Application Routing
+-------------------------
+
+Allow cross app link just by adding a sw_app=application_name in your link.
+
+Enable the feature, edit your app.yml
+
+  [yml]
+  all:
+    swToolbox:
+      
+      routes_register_cross_applications: on     # active the feature
+    
+      swToolboxCrossApplicationRouting:          # configure the feature
+        frontend:
+          enabled: on                            # enable the feature for the 
+          load: [backend]                        # applications' routes to add 
+          host:                                  # define the host to append 
+            dev: yourhost.local/backend_dev.php  
+            prod: yourhost.local/backend.php    
+
+        backend:
+          enabled: on                            # enable the feature for the 
+          load: [frontend]                       # applications' routes to add 
+          host:                                  # define the host to append 
+            dev: yourhost.local/frontend_dev.php  
+            prod: yourhost.local
+            
+ 
+In your frontend's template, you can access to a backend route like this
+
+<?php link_to('Edit Blog Post', '@edit_post?id='.$blog->getId().'&sw_app=backend') ?>
+
+that's all
