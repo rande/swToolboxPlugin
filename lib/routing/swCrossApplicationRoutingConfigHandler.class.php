@@ -58,13 +58,16 @@ class swCrossApplicationRoutingConfigHandler extends sfRoutingConfigHandler
   {
     $routes = parent::parse($configFiles);
     
+    $new_routes = array();
     foreach($routes as $name => $route)
     {
-      $routes[$name][1][2]['sw_app'] = $this->app;
-      $routes[$name][1][2]['sw_host'] = $this->host;
+      $name = $this->app.'.'.$name;
+      $new_routes[$name] = $route;
+      $new_routes[$name][1][2]['sw_app'] = $this->app;
+      $new_routes[$name][1][2]['sw_host'] = $this->host;
     }
     
-    return $routes;
+    return $new_routes;
   }
   
   public function evaluate($configFiles)
@@ -77,12 +80,8 @@ class swCrossApplicationRoutingConfigHandler extends sfRoutingConfigHandler
       $r = new ReflectionClass($route[0]);
       
       $routes[$name] = new swEncapsulateRoute($r->newInstanceArgs($route[1]), $this->host, $this->app);
-      
     }
 
     return $routes;
   }
-  
-
-  
 }
