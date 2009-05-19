@@ -57,11 +57,12 @@ class swToolboxRoutingCrossApplicationRouting
     
     $host = isset($config[$app]['host'][$env]) ? $config[$app]['host'][$env] : null;
     
+    
+    //
     foreach($config[$app]['load'] as $app_to_load)
     {
-      
       $config_handler = new swCrossApplicationRoutingConfigHandler;
-      $config_handler->setApp($app);
+      $config_handler->setApp($app_to_load);
       $config_handler->setHost($host);
       
       $routes = $config_handler->evaluate(array(sfConfig::get('sf_apps_dir').'/'.$app_to_load.'/config/routing.yml'));

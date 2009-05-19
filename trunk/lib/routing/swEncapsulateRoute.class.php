@@ -60,7 +60,9 @@ class swEncapsulateRoute extends sfRoute implements Serializable
   public function generate($params, $context = array(), $absolute = false)
   {
     
-    unset($params['sw_app']);
+    unset(
+      $params['sw_app']
+    );
 
     $url = $this->route->generate($params, $context, true);
 
@@ -89,7 +91,10 @@ class swEncapsulateRoute extends sfRoute implements Serializable
   
   public function matchesUrl($url, $context = array())
   {
-    return $this->route->matchesUrl($url, $context = array());
+    
+    // always return false to not match current application routes
+    
+    return false;
   }
   
   
