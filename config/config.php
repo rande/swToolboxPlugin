@@ -27,6 +27,11 @@ if (sfConfig::get('app_swToolbox_routes_register', true) && in_array('swToolbox'
   $this->dispatcher->connect('routing.load_configuration', array('swToolboxRouting', 'listenToRoutingLoadConfigurationEvent'));
 }
 
+if (sfConfig::get('app_swToolbox_routes_register_cross_applications', false))
+{
+  $this->dispatcher->connect('routing.load_configuration', array('swToolboxRoutingCrossApplicationRouting', 'listenToRoutingLoadConfigurationEvent'));
+}
+
 if(sfConfig::get('app_swToolbox_autoload_helper', true))
 {
   $this->loadHelpers(array('swToolbox'));
