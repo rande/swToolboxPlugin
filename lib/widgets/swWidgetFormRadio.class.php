@@ -22,7 +22,7 @@
  */
 
 /**
- * sfWidgetFormRadio represents one radio HTML tag.
+ * swWidgetFormRadio represents one radio HTML tag.
  *
  * @package    symfony
  * @subpackage widget

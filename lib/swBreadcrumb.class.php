@@ -23,7 +23,7 @@
 
 /**
  *
- * @package    swBreadcrumb
+ * @package    swToolboxPlugin
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */

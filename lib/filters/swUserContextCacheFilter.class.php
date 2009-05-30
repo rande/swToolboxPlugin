@@ -123,8 +123,7 @@ class swUserContextCacheFilter extends sfCacheFilter
   
   public function executePolicy($policy = 'replace', $vars = array(), $options = array())
   {
-    
-    $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('swUserContextCacheFilter : execute policy : '.$policy.' with vars : '.print_r($vars, 1))));
+    //$this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('swUserContextCacheFilter : execute policy : '.$policy.' with vars : '.print_r($vars, 1))));
     
     $content = $this->context->getResponse()->getContent();
     
