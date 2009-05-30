@@ -3,8 +3,6 @@ Cross Application Routing
 
 IMPORTANT : This feature does not work with no_script_name = off
 
-Allow cross app link just by adding a sw_app=application_name in your link.
-
 Enable the feature, edit your app.yml
 
   [yml]

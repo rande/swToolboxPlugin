@@ -310,7 +310,7 @@ function sw_user_context_var($varname)
     $config      = sfConfig::get('app_swToolbox_swUserContextCacheFilter', false);
     $context     = sfContext::getInstance();
     $internalUri = $context->getRouting()->getCurrentInternalUri();
-    $cacheable   = $context->getViewCacheManager()->isCacheable($internalUri);
+    $cacheable   = $context->getViewCacheManager() && $context->getViewCacheManager()->isCacheable($internalUri) ? true : false;
   }
   
   if($config === false)

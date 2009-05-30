@@ -236,7 +236,7 @@ abstract class swDoctrineDatagrid extends sfForm
   public function init()
   {
     $this->bind($this->getDefaults());
-
+    
     $this->preparePager();
   }
   
