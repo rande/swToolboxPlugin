@@ -163,7 +163,11 @@ class swToolbox
     
     // 4. EXECUTE THE ACTION
     $action->getVarHolder()->add($vars);
-    $action->execute($context->getRequest());
+    if($action->execute($context->getRequest() == sfView::NONE))
+    {
+    	// someone has cancalled the email rendering
+    	return sfView::NONE;
+    }
 
     // 5. RENDER THE MAIL
     $view = new swMailView($context, $moduleName, $actionName, 'swMailView');
