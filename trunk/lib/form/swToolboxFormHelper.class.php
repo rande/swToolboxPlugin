@@ -78,6 +78,14 @@ class swToolboxFormHelper
    */
   static function convertFileInformation($taintedFiles)
   {
+    // the bug has been fixed in 1.2.7
+    // see http://trac.symfony-project.org/ticket/5075
+    if(version_compare(SYMFONY_VERSION, '1.2.6', '>'))
+    {
+      
+      return $taintedFiles;
+    }
+    
     $newOrdering = array();
     foreach(array_keys($taintedFiles) as $attr)
     {
