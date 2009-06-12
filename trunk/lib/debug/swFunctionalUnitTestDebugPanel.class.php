@@ -47,12 +47,12 @@ class swFunctionalUnitTestDebugPanel extends sfWebDebugPanel
   {
     
     return '
-      <div id="sfDebugPanelFunctionalUnitTest">'.
+      <div id="sfDebugPanelFunctionalUnitTest"><div style="float:left">'.
       "<a href='?_sw_func_reset=1'>Reset</a> - ".
       (!sfContext::getInstance()->getUser()->getAttribute('sw_func_enabled', false, 'swToolbox') ?
       "<a href='?_sw_func_enabled=1'>Activate</a>" :
       "<a href='?_sw_func_enabled=0'>Deactivate</a>")
-      .'<br /><textarea style="width:90%; height: 300px">'.htmlspecialchars('
+      .'<br /><textarea style="width:500px; height: 200px; font-family:courier">'.htmlspecialchars('
 <?php
 
 include(dirname(__FILE__).\'/../../bootstrap/functional.php\');
@@ -67,6 +67,22 @@ $conn->beginTransaction();
 $conn->rollback();', ENT_COMPAT, 'UTF-8').'
 </textarea>
       </div>
+      <div style="float:left">
+        <h2>References</h2>
+        <ul>
+          <li><a href="http://www.symfony-project.org/book/1_2/15-Unit-and-Functional-Testing#chapter_15_functional_tests" target="_new">Functional Test</a>
+            <ul>
+              <li><a href="http://www.symfony-project.org/book/1_2/15-Unit-and-Functional-Testing#chapter_15_sub_browsing_with_the_sftestbrowser_object" target="_new">Browsing with the sfTestBrowser Object</a></li>
+              <li><a href="http://www.symfony-project.org/book/1_2/15-Unit-and-Functional-Testing#chapter_15_sub_using_assertions" target="_new">Using Assertions</a></li>
+              <li><a href="http://www.symfony-project.org/book/1_2/15-Unit-and-Functional-Testing#chapter_15_sub_using_css_selectors" target="_new">Using CSS Selectors</a></li>
+              <li><a href="http://www.symfony-project.org/book/1_2/15-Unit-and-Functional-Testing#chapter_15_sub_testing_for_errors" target="_new">Testing for errors</a></li>
+              <li><a href="http://www.symfony-project.org/book/1_2/15-Unit-and-Functional-Testing#chapter_15_sub_working_in_the_test_environment" target="_new">Working in the Test Environment</a></li>          
+            </ul>
+          </li>
+          <li><a href="http://www.symfony-project.org/plugins/swToolboxPlugin" target="_new">swToolboxPlugin (symfony plugin page)</a></li>
+        </ul>
+      </div>
+     </div>
     ';
   }
   
