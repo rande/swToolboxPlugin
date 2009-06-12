@@ -81,10 +81,12 @@ class swFilterFunctionalTest extends sfFilter
   public function execute($filterChain)
   {
 
+    $this->fixSfGuard();
+
     $request   = $this->context->getRequest();
     $response  = $this->context->getResponse();
     $user      = $this->context->getUser();
-
+    
     $is_first_call = $this->isFirstCall();
     if($is_first_call)
     {
@@ -160,10 +162,10 @@ class swFilterFunctionalTest extends sfFilter
         $this->raw("\$browser");
         $user->setAttribute('sw_func_executing', false, 'swToolbox');
       }
-      else if($request->isMethod('post'))
+      else if($request->isMethod('post') || $request->isMethod('put'))
       {
         $this->raw("\$browser");
-        $this->create('call', $url, 'post', $this->getVarsFromRequest($request));
+        $this->create('call', $url, $request->getMethod(), $this->getVarsFromRequest($request));
         $this->raw(
           "  /* " . 
           $this->createPHP('get', $url) . "\n" .
@@ -171,10 +173,15 @@ class swFilterFunctionalTest extends sfFilter
           " */ "
         );
       }
+      else if($request->isMethod('delete'))
+      {
+        $this->raw("\$browser");
+        $this->create('call', $url, $request->getMethod(), $this->getVarsFromRequest($request));
+      }
       else
       {
         $this->raw("\$browser");
-        $this->create('call', $url, 'get',  $_GET);
+        $this->create('call', $url, $request->getMethod(),  $_GET);
       }
     }
 
@@ -185,7 +192,7 @@ class swFilterFunctionalTest extends sfFilter
     }
     
     $this->with('request');    
-      if(!$is_first_call)
+      if(!$is_first_call || $this->context->getActionStack()->getSize() > 1)
       {
         $this->create('isForwardedTo', $action->getModuleName(), $action->getActionName());
       } 
@@ -305,5 +312,23 @@ class swFilterFunctionalTest extends sfFilter
   {
     $args = func_get_args();
     $this->raw(call_user_func_array(array($this, 'createPHP'), $args));
+  }
+  
+  public function fixSfGuard()
+  {
+    $referer = $this->context->getUser()->getAttribute('referer');
+    
+    if(!is_null($referer))
+    {
+      $replace = array(
+        '_sw_func_enabled=1',
+        '_sw_func_reset=1'
+      );
+      
+      $by = array('', '');
+      
+      $referer = str_replace($replace, $by, $referer);
+      $this->context->getUser()->setAttribute('referer', $referer);
+    }
   }
 }
