@@ -1,30 +1,25 @@
-swToolboxHelper
-===============
+# swToolboxHelper
 
-
-sw_t($title)
-------------
-
+## sw_t($title)
   * define the title of the current page
   * custom configuration : edit and add these lines to your app.yml
   
-      [yml]
-      swToolbox:
-        page_title_enabled: true
-        page_title_suffix: " - Thomas Rabaix"
+        [yml]
+        swToolbox:
+          page_title_enabled: true
+          page_title_suffix: " - Thomas Rabaix"
         
-sw_insert_google_api
---------------------
+## sw_insert_google_api
 
   * small helper to insert google api url
   
-      [yml]
-      swToolbox:
-        api_loader:
-          yourhostname:
-            google_api_key: your_key_here
-            google_map_version: 2.x
-            google_map_url: http://maps.google.com/maps
-            google_analytics: [ UA-KEY-ONE, UA-KEY-TWO]
+        [yml]
+        swToolbox:
+          api_loader:
+            yourhostname:
+              google_api_key: your_key_here
+              google_map_version: 2.x
+              google_map_url: http://maps.google.com/maps
+              google_analytics: [ UA-KEY-ONE, UA-KEY-TWO]
   
   
