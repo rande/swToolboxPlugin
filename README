@@ -1,0 +1,269 @@
+For now, there is no full documentation. However you can find some information here
+
+* [swBreadcrumb](http://rabaix.net/en/articles/2009/05/16/working-with-symfony-plugins-breadcrumb "Working with symfony plugins breadcrumb") : Working with symfony plugins breadcrumb
+
+* [swWidgetFormGMapAddress](http://rabaix.net/en/articles/2009/03/04/how-to-use-the-sw-widget-form-g-map-address-widget "How to use the swWidgetFormGMapAddress widget") : How to use the swWidgetFormGMapAddress widget
+
+* [swToolboxFormHelper](http://rabaix.net/en/articles/2009/02/23/let-s-be-more-dynamic-with-sf-form "Let's be more dynamic with sfForm") : 
+Let's be more dynamic with sfForm (Ajax)
+
+* [swFilterFunctionalTest](http://rabaix.net/en/articles/2009/01/27/functional-test-generation-with-symfony-1-2 "Functional Test Generation with symfony 1.2") : 
+Functional Test Generation with symfony 1.2
+
+* [sendMail](http://rabaix.net/en/articles/2009/01/26/send-mail-with-symfony-1-2 "Send Mail with symfony 1.2") : Send Mail with symfony 1.2
+
+
+# sendMail
+
+This feature has been removed from symfony version 1.1 and 1.2. This will simulate the sendMail method
+and add extras features :
+
+* email decorator
+* Zend_Mail Support
+* Charset and Encoding
+* variables assignement from the controller
+
+This solution is based on Zend_Mail for more information please refer to the Zend Framework documentation
+available at : http://framework.zend.com/manual/en/zend.mail.html
+
+## Installation
+
+* Install Zend Framework available at http://www.zend.com/community/downloads   
+  you can also install the lib via svn (http://framework.zend.com/svn/framework/standard/tags/release-1.7.2/library/Zend)
+  The lib must be installed into SF_ROOT_DIR/lib/vendor/
+  
+* Edit the app.yml file
+
+        [yml]
+        swToolbox:
+          mail:
+            charset: utf-8                             # charset to use : utf-8, iso-8859-1, ...
+            encoding: quoted-printable                 # 7bit, 8bit, quoted-printable, base64 (default : quoted-printable)
+            transport:                                 # define which transport class to used
+              # sample with Sendmail
+              class: Zend_Mail_Transport_Sendmail      # Zend_Mail_Transport_Sendmail | Zend_Mail_Transport_Smtp
+              parameters: "-ffrom@yourdomain.com"
+              
+              # sample with Smtp
+              class: Zend_Mail_Transport_Smtp          # Zend_Mail_Transport_Sendmail | Zend_Mail_Transport_Smtp
+              parameters: 
+                - value 1
+                - { auth: Plain|Crammd5|Login, username: yourusername, password: yourpassword }
+                
+            decorator:                                 # define the layout use in the mail
+              enabled: off                             # on | off : set true if all your mail share the same layout
+              directory: %SF_APP_TEMPLATE_DIR%         # where the layout is located, ie %SF_APP_TEMPLATE_DIR%
+              template: email                          # name of the layout, automatically translate to name.FORMAT.php
+            view:                                      # define the view class used to render the template
+              class: swMailView
+        
+* Clear your cache
+
+## Usage
+
+        [php]
+        public finction executeConfirmPaiement()
+        {
+          // [...]
+          
+          // create object in your controller
+          $invoice = Doctrine::getTable('Invoice')->find(..);
+          
+          // call the email action
+          $action->sendMail('yourModule', 'sendInvoice', array('invoice' => $invoice);
+        }
+      
+        public function executeSendInvoice(sfWebRequest $request)
+        {
+          $mail = new swMail;
+          
+          $mail->setSubject('Your Invoice #'.$invoice->getReference());
+          $mail->setFrom('billing@yoursite.com', 'Billing Service');
+          $mail->addTo($this->invoice->getEmail(), $this->invoice->getName());
+          
+          $this->mail = $mail;
+        }
+  
+You should have a least one template file : sendInvoiceSuccess.txt.php or sendInvoiceSuccess.html.php in your
+module/templates folder.
+
+If you want a specific layout around your email (like default header and footer), enable the decorator option
+and create a 'email.txt.php' and/or 'email.html.php' inside the decorator directory.
+
+# swToolboxHelper
+
+## sw_t($title)
+  * define the title of the current page
+  * custom configuration : edit and add these lines to your app.yml
+  
+        [yml]
+        swToolbox:
+          page_title_enabled: true
+          page_title_suffix: " - Thomas Rabaix"
+        
+## sw_insert_google_api
+
+  * small helper to insert google api url
+  
+        [yml]
+        swToolbox:
+          api_loader:
+            yourhostname:
+              google_api_key: your_key_here
+              google_map_version: 2.x
+              google_map_url: http://maps.google.com/maps
+              google_analytics: [ UA-KEY-ONE, UA-KEY-TWO]
+  
+# Cross Application Routing
+
+IMPORTANT : This feature does not work with no_script_name = off
+
+* Enable the feature, edit your app.yml
+
+        [yml]
+        all:
+          swToolbox:
+            
+            routes_register_cross_applications: on     # active the feature
+          
+            swToolboxCrossApplicationRouting:          # configure the feature
+              frontend:
+                enabled: on                            # enable the feature for the 
+                load: [backend]                        # applications' routes to add 
+                host:                                  # define the host to append 
+                  dev: yourhost.local/backend_dev.php  
+                  prod: yourhost.local/backend.php    
+      
+              backend:
+                enabled: on                            # enable the feature for the 
+                load: [frontend]                       # applications' routes to add 
+                host:                                  # define the host to append 
+                  dev: yourhost.local/frontend_dev.php  
+                  prod: yourhost.local
+ 
+* In your frontend's template, you can access to a backend route like this
+
+        [php]
+        <?php link_to('Edit Blog Post', '@backend.edit_post?id='.$blog->getId()) ?>
+
+* that's all !!
+
+## Extra Comment
+
+If you have specific templates, shared across applications, you might don't want to change the url
+so you can create your own sfFrontWebController and extends the genUrl method.
+
+        [php]
+        class yourFrontWebController extends sfFrontWebController
+        {
+          
+          /**
+           * 
+           * 
+           * @see sfWebController#genUrl()
+           */
+          public function genUrl($parameters = array(), $absolute = false)
+          {
+            
+            // absolute URL or symfony URL?
+            if (is_string($parameters) && preg_match('#^[a-z][a-z0-9\+.\-]*\://#i', $parameters))
+            {
+              return $parameters;
+            }
+        
+            // relative URL?
+            if (is_string($parameters) && 0 === strpos($parameters, '/'))
+            {
+              return $parameters;
+            }
+        
+            if (is_string($parameters) && $parameters == '#')
+            {
+              return $parameters;
+            }
+        
+            $route = '';
+            $fragment = '';
+        
+            if (is_string($parameters))
+            {
+              // strip fragment
+              if (false !== ($pos = strpos($parameters, '#')))
+              {
+                $fragment = substr($parameters, $pos + 1);
+                $parameters = substr($parameters, 0, $pos);
+              }
+        
+              list($route, $parameters) = $this->convertUrlStringToParameters($parameters);
+            }
+            else if (is_array($parameters))
+            {
+              if (isset($parameters['sf_route']))
+              {
+                $route = $parameters['sf_route'];
+                unset($parameters['sf_route']);
+              }
+            }
+        
+            // Custom method to avoid the need of modifing the route name in the template
+            //   this is usefull if the template is shared across multiple template
+            //   the first route found will be used
+            if(!$this->context->getRouting()->hasRouteName($route))
+            {
+              $sw_cross_link_config = sfConfig::get('app_swToolbox_swToolboxCrossApplicationRouting', array());
+              $sw_cross_current_app = $this->context->getConfiguration()->getApplication();
+              
+              if(array_key_exists($sw_cross_current_app, $sw_cross_link_config))
+              {
+                foreach($sw_cross_link_config[$sw_cross_current_app]['load'] as $app_to_load)
+                {
+                  $app_route = $app_to_load.'.'.$route;
+                  if($this->context->getRouting()->hasRouteName($app_route))
+                  {
+                    $route = $app_route;
+                    break;
+                  }
+                }
+              }
+            }
+            
+            // routing to generate path
+            $url = $this->context->getRouting()->generate($route, $parameters, $absolute);
+        
+            if ($fragment)
+            {
+              $url .= '#'.$fragment;
+            }
+        
+            return $url;
+          }
+        }
+        
+
+
+* edit your factories.yml to change the class name
+
+        [yml]
+        all:
+          controller:
+            class: yourFrontWebController
+            
+# swUserContextCacheFilter
+
+This class can replace the default cache handler class. The class always executes an user context action.
+
+Let's take this example with an ecommerce website, you might want to cache the full action, however some parts are user specific.
+So you can have a viewProduct action and a viewProduct_UserContext action in your actions.class.php
+
+* viewProduct : execute page related action, get the product and other related information
+* viewProduct_UserContext : execute user specific action for the current page, like testing if the product is already in the client's basket.
+
+## Installation
+
+* edit the filters.yml
+
+        [yml]
+        cache:
+          class: swUserContextCacheFilter
+          param:
+            condition: on # always set to on

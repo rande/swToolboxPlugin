@@ -1,132 +1,133 @@
-Cross Application Routing
--------------------------
+# Cross Application Routing
 
 IMPORTANT : This feature does not work with no_script_name = off
 
-Enable the feature, edit your app.yml
+* Enable the feature, edit your app.yml
 
-  [yml]
-  all:
-    swToolbox:
+        [yml]
+        all:
+          swToolbox:
+            
+            routes_register_cross_applications: on     # active the feature
+          
+            swToolboxCrossApplicationRouting:          # configure the feature
+              frontend:
+                enabled: on                            # enable the feature for the 
+                load: [backend]                        # applications' routes to add 
+                host:                                  # define the host to append 
+                  dev: yourhost.local/backend_dev.php  
+                  prod: yourhost.local/backend.php    
       
-      routes_register_cross_applications: on     # active the feature
-    
-      swToolboxCrossApplicationRouting:          # configure the feature
-        frontend:
-          enabled: on                            # enable the feature for the 
-          load: [backend]                        # applications' routes to add 
-          host:                                  # define the host to append 
-            dev: yourhost.local/backend_dev.php  
-            prod: yourhost.local/backend.php    
-
-        backend:
-          enabled: on                            # enable the feature for the 
-          load: [frontend]                       # applications' routes to add 
-          host:                                  # define the host to append 
-            dev: yourhost.local/frontend_dev.php  
-            prod: yourhost.local
+              backend:
+                enabled: on                            # enable the feature for the 
+                load: [frontend]                       # applications' routes to add 
+                host:                                  # define the host to append 
+                  dev: yourhost.local/frontend_dev.php  
+                  prod: yourhost.local
  
-In your frontend's template, you can access to a backend route like this
+* In your frontend's template, you can access to a backend route like this
 
-<?php link_to('Edit Blog Post', '@backend.edit_post?id='.$blog->getId()) ?>
+        [php]
+        <?php link_to('Edit Blog Post', '@backend.edit_post?id='.$blog->getId()) ?>
 
-that's all !!
+* that's all !!
 
-Extra Comment
--------------
+## Extra Comment
+
 If you have specific templates, shared across applications, you might don't want to change the url
 so you can create your own sfFrontWebController and extends the genUrl method.
 
-like :
-
-class yourFrontWebController extends sfFrontWebController
-{
-  
-  /**
-   * 
-   * 
-   * @see sfWebController#genUrl()
-   */
-  public function genUrl($parameters = array(), $absolute = false)
-  {
-    
-    // absolute URL or symfony URL?
-    if (is_string($parameters) && preg_match('#^[a-z][a-z0-9\+.\-]*\://#i', $parameters))
-    {
-      return $parameters;
-    }
-
-    // relative URL?
-    if (is_string($parameters) && 0 === strpos($parameters, '/'))
-    {
-      return $parameters;
-    }
-
-    if (is_string($parameters) && $parameters == '#')
-    {
-      return $parameters;
-    }
-
-    $route = '';
-    $fragment = '';
-
-    if (is_string($parameters))
-    {
-      // strip fragment
-      if (false !== ($pos = strpos($parameters, '#')))
-      {
-        $fragment = substr($parameters, $pos + 1);
-        $parameters = substr($parameters, 0, $pos);
-      }
-
-      list($route, $parameters) = $this->convertUrlStringToParameters($parameters);
-    }
-    else if (is_array($parameters))
-    {
-      if (isset($parameters['sf_route']))
-      {
-        $route = $parameters['sf_route'];
-        unset($parameters['sf_route']);
-      }
-    }
-
-    // Custom method to avoid the need of modifing the route name in the template
-    //   this is usefull if the template is shared across multiple template
-    //   the first route found will be used
-    if(!$this->context->getRouting()->hasRouteName($route))
-    {
-      $sw_cross_link_config = sfConfig::get('app_swToolbox_swToolboxCrossApplicationRouting', array());
-      $sw_cross_current_app = $this->context->getConfiguration()->getApplication();
-      
-      if(array_key_exists($sw_cross_current_app, $sw_cross_link_config))
-      {
-        foreach($sw_cross_link_config[$sw_cross_current_app]['load'] as $app_to_load)
+        [php]
+        class yourFrontWebController extends sfFrontWebController
         {
-          $app_route = $app_to_load.'.'.$route;
-          if($this->context->getRouting()->hasRouteName($app_route))
+          
+          /**
+           * 
+           * 
+           * @see sfWebController#genUrl()
+           */
+          public function genUrl($parameters = array(), $absolute = false)
           {
-            $route = $app_route;
-            break;
+            
+            // absolute URL or symfony URL?
+            if (is_string($parameters) && preg_match('#^[a-z][a-z0-9\+.\-]*\://#i', $parameters))
+            {
+              return $parameters;
+            }
+        
+            // relative URL?
+            if (is_string($parameters) && 0 === strpos($parameters, '/'))
+            {
+              return $parameters;
+            }
+        
+            if (is_string($parameters) && $parameters == '#')
+            {
+              return $parameters;
+            }
+        
+            $route = '';
+            $fragment = '';
+        
+            if (is_string($parameters))
+            {
+              // strip fragment
+              if (false !== ($pos = strpos($parameters, '#')))
+              {
+                $fragment = substr($parameters, $pos + 1);
+                $parameters = substr($parameters, 0, $pos);
+              }
+        
+              list($route, $parameters) = $this->convertUrlStringToParameters($parameters);
+            }
+            else if (is_array($parameters))
+            {
+              if (isset($parameters['sf_route']))
+              {
+                $route = $parameters['sf_route'];
+                unset($parameters['sf_route']);
+              }
+            }
+        
+            // Custom method to avoid the need of modifing the route name in the template
+            //   this is usefull if the template is shared across multiple template
+            //   the first route found will be used
+            if(!$this->context->getRouting()->hasRouteName($route))
+            {
+              $sw_cross_link_config = sfConfig::get('app_swToolbox_swToolboxCrossApplicationRouting', array());
+              $sw_cross_current_app = $this->context->getConfiguration()->getApplication();
+              
+              if(array_key_exists($sw_cross_current_app, $sw_cross_link_config))
+              {
+                foreach($sw_cross_link_config[$sw_cross_current_app]['load'] as $app_to_load)
+                {
+                  $app_route = $app_to_load.'.'.$route;
+                  if($this->context->getRouting()->hasRouteName($app_route))
+                  {
+                    $route = $app_route;
+                    break;
+                  }
+                }
+              }
+            }
+            
+            // routing to generate path
+            $url = $this->context->getRouting()->generate($route, $parameters, $absolute);
+        
+            if ($fragment)
+            {
+              $url .= '#'.$fragment;
+            }
+        
+            return $url;
           }
         }
-      }
-    }
-    
-    // routing to generate path
-    $url = $this->context->getRouting()->generate($route, $parameters, $absolute);
-
-    if ($fragment)
-    {
-      $url .= '#'.$fragment;
-    }
-
-    return $url;
-  }
-}
+        
 
 
-edit your factories.yml to change the class name
+* edit your factories.yml to change the class name
 
-all:
-  controller:
-    class: yourFrontWebController
+        [yml]
+        all:
+          controller:
+            class: yourFrontWebController

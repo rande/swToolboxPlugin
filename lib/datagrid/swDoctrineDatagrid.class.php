@@ -48,6 +48,7 @@ abstract class swDoctrineDatagrid extends sfForm
     // validator options
     $options['allow_extra_fields'] = isset($options['allow_extra_fields']) ? $options['allow_extra_fields'] : true;
     $options['filter_extra_fields'] = isset($options['filter_extra_fields']) ? $options['filter_extra_fields'] : false;
+    $options['disabled_init'] = isset($options['disabled_init']) ? $options['disabled_init'] : false;
     
     parent::__construct(array(), $options, $CSRFSecret);
 
@@ -60,7 +61,11 @@ abstract class swDoctrineDatagrid extends sfForm
     $this->setDefaults($defaults);
     $this->setStoredValues($defaults);
 
-    $this->init();
+    if(!$options['disabled_init'])
+    {
+      $this->init();
+    }
+    
   }
 
   /**

@@ -34,7 +34,7 @@ function swGmapWidget(options){
 
 swGmapWidget.prototype = new Object();
 
-swGmapWidget.prototype.init = function(options) {
+swGmapWidget.prototype.init = function() {
   
   if(!GBrowserIsCompatible()) 
   {
