@@ -117,31 +117,36 @@ class swToolboxFormHelper
    */
   static public function resetFormLabels(sfForm $form, array $options = array())
   {
-    $prefix = isset($options['prefix']) ? $options['prefix'] : false;
-    $catalogue = isset($options['catalogue']) ? $options['catalogue'] : false;
+    $options['prefix'] = isset($options['prefix']) ? $options['prefix'] : false;
+    $options['catalogue'] = isset($options['catalogue']) ? $options['catalogue'] : false;
+    $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : false;
     
-    if($catalogue !== false)
+    if($options['catalogue'] !== false)
     {
-      $form->getWidgetSchema()->getFormFormatter()->setTranslationCatalogue($catalogue);
+      $form->getWidgetSchema()->getFormFormatter()->setTranslationCatalogue($options['catalogue']);
     }
     
-    if($prefix !== false)
+    if($options['prefix'] !== false)
     {
-      self::resetSchemaLabels($form->getWidgetSchema(), $prefix);
+      self::resetSchemaLabels($form->getWidgetSchema(), $form->getValidatorSchema(), $options);
     }
-    
   }
   
-  static private function resetSchemaLabels(sfWidgetFormSchema $widget_schema, $prefix)
+  static private function resetSchemaLabels(sfWidgetFormSchema $widget_schema, sfValidatorSchema $validator_schema, array $options)
   {
     foreach($widget_schema->getFields() as $name => $child_widget_schema)
     {
-
-      $child_widget_schema->setLabel($prefix.$name);
+      $format = "%s";
+      if($options['mandatory_format'] && isset($validator_schema[$name]) && $validator_schema[$name]->getOption('required'))
+      {
+        $format = $options['mandatory_format'];
+      }
+      
+      $child_widget_schema->setLabel(sprintf($format, $options['prefix'].$name));
       
       if($child_widget_schema instanceof sfWidgetFormSchema)
       {
-        self::resetSchemaLabels($child_widget_schema, $prefix);
+        self::resetSchemaLabels($child_widget_schema, $validator_schema[$name], $options);
       }
     }
   }
