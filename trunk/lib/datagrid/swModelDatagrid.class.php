@@ -26,57 +26,35 @@
  * Create a datagrid based on sfForm framework from symfony-project
  * 
  * The sfForm is used to define filters and display the filters elements.
- * The result is a sfDoctrinePager
  * 
  * @author Thomas Rabaix <thomas.rabaix@soleoweb.com> 
  *
  * SVN : $Id$
  */
-abstract class swDoctrineDatagrid extends swModelDatagrid
+abstract class swModelDatagrid extends swDatagrid
 {
-  
-    /**
-   * build the query that will be handle by the pager
-   * 
-   * @param $query
-   * @return query
-   */
-  function buildQuery(Doctrine_Query $query) {
-
-    return $query;
-  }
-
   /**
    * Query to return when the datagrid is not valid
    * 
-   * @return Doctrine_Query
+   * @return query
    */
-  public function getInvalidQuery()
-  {
-    $query = $this->getBaseQuery();
-    $query->addWhere('id IS NULL'); // set an impossible query
-    
-    return $query;
-  }
+  abstract public function getInvalidQuery();
   
   
-  public function getBaseQuery()
-  {
-    
-    return Doctrine::getTable($this->getModelName())->createQuery();
-  }
+  /**
+   * return the base query used by the model
+   * 
+   * @return query
+   */
+  abstract public function getBaseQuery();
   
-  public function preparePager()
-  {
-    $page  = $this->getOption('page');
-    $query = $this->isValid() ? $this->buildQuery($this->getBaseQuery()) : $this->getInvalidQuery();
-    $per_page = $this->getOption('per_page', 25);
-    
-    $this->pager = new sfDoctrinePager($this->getModelName());
-    $this->pager->setPage($page);
-    $this->pager->setQuery($query);
-    $this->pager->setMaxPerPage($per_page);
-    $this->pager->init();
-  }
-
+  /**
+   * 
+   * model name used in the doctrine datagrid
+   * 
+   * @return string
+   */
+  abstract function getModelName();
+  
+  
 }
