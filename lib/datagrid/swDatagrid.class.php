@@ -31,7 +31,7 @@
  *
  * SVN : $Id$
  */
-class swDatagrid extends sfForm
+abstract class swDatagrid extends sfForm
 {
 
   protected 
