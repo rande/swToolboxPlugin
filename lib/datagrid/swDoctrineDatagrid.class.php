@@ -66,10 +66,16 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
     return Doctrine::getTable($this->getModelName())->createQuery();
   }
   
+  public function getQuery()
+  {
+    
+    return $this->isValid() ? $this->buildQuery($this->getBaseQuery()) : $this->getInvalidQuery();
+  }
+  
   public function preparePager()
   {
     $page  = $this->getOption('page');
-    $query = $this->isValid() ? $this->buildQuery($this->getBaseQuery()) : $this->getInvalidQuery();
+    $$query = $this->getQuery();
     $per_page = $this->getOption('per_page', 25);
     
     $this->pager = new sfDoctrinePager($this->getModelName());

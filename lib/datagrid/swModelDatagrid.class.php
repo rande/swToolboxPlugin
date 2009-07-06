@@ -49,6 +49,13 @@ abstract class swModelDatagrid extends swDatagrid
   abstract public function getBaseQuery();
   
   /**
+   * return the query used in the datagrid
+   * 
+   * @return query
+   */
+  abstract public function getQuery();
+  
+  /**
    * 
    * model name used in the doctrine datagrid
    * 
