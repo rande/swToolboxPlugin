@@ -75,7 +75,7 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
   public function preparePager()
   {
     $page  = $this->getOption('page');
-    $$query = $this->getQuery();
+    $query = $this->getQuery();
     $per_page = $this->getOption('per_page', 25);
     
     $this->pager = new sfDoctrinePager($this->getModelName());
