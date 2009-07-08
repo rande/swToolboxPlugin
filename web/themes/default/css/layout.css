@@ -310,7 +310,8 @@ div.sw-base-filters h3 {
 }
 
 div.sw-base-filters {
-  background: #FDFCF6;
+  b/ackground: #FDFCF6;
+  margin-bottom: 10px;
 }
 
 div.sw-base-filters dd,div.sw-base-filters dt {
