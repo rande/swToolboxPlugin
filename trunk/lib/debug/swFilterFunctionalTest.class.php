@@ -230,12 +230,40 @@ class swFilterFunctionalTest extends sfFilter
   public function getVarsFromRequest($request)
   {
     $vars = $request->getParameterHolder()->getAll();
+
+    $vars = $this->fixCSRF($vars);
     
     unset(
       $vars['module'],
       $vars['action']
     );
     
+    return $vars;
+  }
+
+  /**
+   * for now, CSRF field are removed from functionnal test generation
+   * until there is a way to get this value easily
+   *
+   * @param <type> $vars
+   */
+  public function fixCSRF(&$vars)
+  {
+    $name = sfForm::getCSRFFieldName();
+
+    if(isset($vars[$name]))
+    {
+      unset($vars[$name]);
+    }
+    
+    foreach($vars as $name => $var)
+    {
+      if(is_array($var))
+      {
+        $vars[$name] = $this->fixCSRF($var);
+      }
+    }
+
     return $vars;
   }
   
