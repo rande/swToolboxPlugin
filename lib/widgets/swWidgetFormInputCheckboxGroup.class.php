@@ -60,10 +60,26 @@ class swWidgetFormInputCheckboxGroup extends sfWidgetFormSelectMany
     if(array_key_exists('separator', $attributes))
     {
       $separator = $attributes['separator']."\n";
-      unset($attributes['separator']);
+
+      return $this->renderContentTag('div', "\n".implode($separator, $this->getInputForCheckboxGroup($value, $choices, $name, $attributes))."\n", $attributes);
     }
     
-    return $this->renderContentTag('div', "\n".implode($separator, $this->getInputForCheckboxGroup($value, $choices, $name))."\n", $attributes);
+    if(array_key_exists('format', $attributes))
+    {
+      $format = $attributes['format'];
+      unset($attributes['format']);
+      
+      $inputs = array();
+      
+      foreach($this->getInputForCheckboxGroup($value, $choices, $name, $attributes) as $input)
+      {
+        $inputs[] = sprintf($format, $input);
+      }
+      
+      return $this->renderContentTag('div', "\n".implode("\n", $inputs)."\n", $attributes);
+    }
+    
+    
   }
 
   /**
@@ -75,10 +91,10 @@ class swWidgetFormInputCheckboxGroup extends sfWidgetFormSelectMany
    *
    * @return array  An array of option tags
    */
-  protected function getInputForCheckboxGroup($value, $choices, $name)
+  protected function getInputForCheckboxGroup($value, $choices, $name, $attributes = array())
   {
     $mainAttributes = $this->attributes;
-    $this->attributes = array();
+    $this->attributes = $attributes;
 
     
     $options = array();
