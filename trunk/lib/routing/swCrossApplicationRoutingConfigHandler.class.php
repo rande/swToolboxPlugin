@@ -73,13 +73,32 @@ class swCrossApplicationRoutingConfigHandler extends sfRoutingConfigHandler
   public function evaluate($configFiles)
   {
     $routeDefinitions = $this->parse($configFiles);
-
+    
     $routes = array();
     foreach ($routeDefinitions as $name => $route)
     {
       $r = new ReflectionClass($route[0]);
       
-      $routes[$name] = new swEncapsulateRoute($r->newInstanceArgs($route[1]), $this->host, $this->app);
+      if($r->isSubclassOf('sfRouteCollection'))
+      {
+
+        $route[1][0]['requirements']['sw_app'] = $this->app;
+        $route[1][0]['requirements']['sw_host'] = $this->host;
+        
+        $collection_route = $r->newInstanceArgs($route[1]);
+        
+        foreach($collection_route->getRoutes() as $name => $route)
+        {
+          $routes[$this->app.'.'.$name] = new swEncapsulateRoute($route, $this->host, $this->app);;
+        }
+      }
+      else
+      {
+        $route[1][2]['sw_app'] = $this->app;
+        $route[1][2]['sw_host'] = $this->host;
+          
+        $routes[$name] = new swEncapsulateRoute($r->newInstanceArgs($route[1]), $this->host, $this->app);
+      }
     }
 
     return $routes;
