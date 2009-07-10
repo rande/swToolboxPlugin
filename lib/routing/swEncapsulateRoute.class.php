@@ -88,7 +88,6 @@ class swEncapsulateRoute extends sfRoute implements Serializable
     return $this->route->bind($context, $parameters);
   }
   
-  
   public function matchesUrl($url, $context = array())
   {
     
@@ -97,18 +96,15 @@ class swEncapsulateRoute extends sfRoute implements Serializable
     return false;
   }
   
-  
   public function matchesParameters($params, $context = array())
   {
     return $this->route->matchesParameters($params, $context = array());
   }
   
-  
   public function getPattern()
   {
     return $this->route->getPattern();
   }
-  
   
   public function getRegex()
   {
@@ -125,12 +121,10 @@ class swEncapsulateRoute extends sfRoute implements Serializable
     return $this->route->getOptions();
   }
   
-  
   public function getVariables()
   {
     return $this->route->getVariables();
   }
-  
   
   public function getDefaults()
   {
@@ -143,7 +137,6 @@ class swEncapsulateRoute extends sfRoute implements Serializable
     return $this->route->getRequirements();
   }
   
-
   public function getDefaultParameters()
   {
     return $this->route->getDefaultParameters();

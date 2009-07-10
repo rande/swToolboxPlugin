@@ -57,7 +57,6 @@ class swToolboxRoutingCrossApplicationRouting
     
     $host = isset($config[$app]['host'][$env]) ? $config[$app]['host'][$env] : null;
     
-    
     //
     foreach($config[$app]['load'] as $app_to_load)
     {
