@@ -50,21 +50,31 @@ class swToolboxRoutingCrossApplicationRouting
     $env = $configuration->getEnvironment();
     $app = $configuration->getApplication();
     
-    if(!array_key_exists($app, $config) || !$config[$app]['enabled'])
+    if(!$config || !array_key_exists('enabled', $config) || !$config['enabled'])
+    {
+      
+      return;
+    }
+    
+    if(!array_key_exists('load', $config) || !is_array($config['load']))
     {
       return;
     }
     
-    $host = isset($config[$app]['host'][$env]) ? $config[$app]['host'][$env] : null;
-    
     //
-    foreach($config[$app]['load'] as $app_to_load)
+    foreach($config['load'] as $app_to_load => $envs) 
     {
+      if(!array_key_exists($env, $envs)) 
+      {
+        
+        continue;
+      }
+      
       $config_handler = new swCrossApplicationRoutingConfigHandler;
       $config_handler->setApp($app_to_load);
-      $config_handler->setHost($host);
+      config_handler->setHost($envs[$env]); 
       
-      $routes = $config_handler->evaluate(array(sfConfig::get('sf_apps_dir').'/'.$app_to_load.'/config/routing.yml'));
+      $routes = $config_handler->evaluate(array(sfConfig::get('sf_apps_dir').'/'.$app_to_load.'/config/routing.yml')); 
       
       foreach($routes as $name => $route)
       {
