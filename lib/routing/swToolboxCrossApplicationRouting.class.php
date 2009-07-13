@@ -39,7 +39,7 @@ class swToolboxRoutingCrossApplicationRouting
   {
     $r = $event->getSubject();
 
-    $config = sfConfig::get('app_swToolbox_swToolboxCrossApplicationRouting', array());
+    $config = sfConfig::get('app_swToolbox_cross_link_application', array());
     
     if(!sfContext::hasInstance())
     {
@@ -50,19 +50,18 @@ class swToolboxRoutingCrossApplicationRouting
     $env = $configuration->getEnvironment();
     $app = $configuration->getApplication();
     
-    if(!$config || !array_key_exists('enabled', $config) || !$config['enabled'])
+    if(!array_key_exists('enabled', $config[$app]) || !$config[$app]['enabled'])
     {
       
       return;
     }
     
-    if(!array_key_exists('load', $config) || !is_array($config['load']))
+    if(!array_key_exists('load', $config[$app]) || !is_array($config[$app]['load']))
     {
       return;
     }
     
-    //
-    foreach($config['load'] as $app_to_load => $envs) 
+    foreach($config[$app]['load'] as $app_to_load => $envs) 
     {
       if(!array_key_exists($env, $envs)) 
       {
@@ -72,7 +71,7 @@ class swToolboxRoutingCrossApplicationRouting
       
       $config_handler = new swCrossApplicationRoutingConfigHandler;
       $config_handler->setApp($app_to_load);
-      config_handler->setHost($envs[$env]); 
+      $config_handler->setHost($envs[$env]); 
       
       $routes = $config_handler->evaluate(array(sfConfig::get('sf_apps_dir').'/'.$app_to_load.'/config/routing.yml')); 
       
