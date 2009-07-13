@@ -2,28 +2,33 @@
 
 IMPORTANT : This feature does not work with no_script_name = off
 
-* Enable the feature, edit your app.yml
+## Installation
+
+* edit your app.yml file to include the following configuration 
+
+        [yaml]
+        all:
+          swToolbox:
+            cross_link_application:
+              frontend:
+                enabled: on                     # enable the feature 
+                load:                           # 
+                  backend:                      # load the backend route in the frontend
+                    dev: rabaix.net/backend.php   # define the full path for the dev environnement
+                    prod: rabaix.net/backend      # define the full path for the prod environnement 
+              backend:
+                enabled: on                     # enable the feature for the 
+                load: 
+                  frontend:                     # define the host to append 
+                    dev: rabaix.net/frontend_dev.php
+                    prod: rabaix.net
+
+* edit your factories.yml 
 
         [yml]
         all:
-          swToolbox:
-            
-            routes_register_cross_applications: on     # active the feature
-          
-            swToolboxCrossApplicationRouting:          # configure the feature
-              frontend:
-                enabled: on                            # enable the feature for the 
-                load: [backend]                        # applications' routes to add 
-                host:                                  # define the host to append 
-                  dev: yourhost.local/backend_dev.php  
-                  prod: yourhost.local/backend.php    
-      
-              backend:
-                enabled: on                            # enable the feature for the 
-                load: [frontend]                       # applications' routes to add 
-                host:                                  # define the host to append 
-                  dev: yourhost.local/frontend_dev.php  
-                  prod: yourhost.local
+          routing:
+            class: swPatternRouting
  
 * In your frontend's template, you can access to a backend route like this
 
