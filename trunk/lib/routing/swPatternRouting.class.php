@@ -30,6 +30,10 @@
  */
 class swPatternRouting extends sfPatternRouting
 {
+  
+  protected
+    $context_routes = null;
+    
   /**
    * overwrite the sfPatternRouting to handle the cross link application feature
    * 
@@ -45,11 +49,13 @@ class swPatternRouting extends sfPatternRouting
       $cacheKey = 'generate_'.$name.'_'.md5(serialize(array_merge($this->defaultParameters, $params))).'_'.md5(serialize($this->options['context']));
       if ($this->options['lookup_cache_dedicated_keys'] && $url = $this->cache->get('symfony.routing.data.'.$cacheKey))
       {
-        return $this->fixGeneratedUrl($url, $absolute);
+        
+        return strpos($name, '.') ? $url : $this->fixGeneratedUrl($url, $absolute);
       }
       elseif (isset($this->cacheData[$cacheKey]))
       {
-        return $this->fixGeneratedUrl($this->cacheData[$cacheKey], $absolute);
+
+        return strpos($name, '.') ? $url : $this->fixGeneratedUrl($this->cacheData[$cacheKey], $absolute);
       }
     }
 
@@ -58,7 +64,13 @@ class swPatternRouting extends sfPatternRouting
       // named route
       if (!isset($this->routes[$name]))
       {
-        throw new sfConfigurationException(sprintf('The route "%s" does not exist.', $name));
+        // try to find the route on different application
+        if(($application_name = $this->getApplicationRoute($name)) === false)
+        {
+          throw new sfConfigurationException(sprintf('The route "%s" does not exist.', $name));
+        };
+        
+        $name = $application_name;
       }
 
       $route = $this->routes[$name];
@@ -94,11 +106,31 @@ class swPatternRouting extends sfPatternRouting
       }
     }
 
-    if(strpos($name, '.'))
+    return strpos($name, '.') ? $url : $this->fixGeneratedUrl($url, $absolute);
+  }
+  
+  protected function getApplicationRoute($route_name)
+  {
+    if(is_null($this->context_routes))
     {
-      return $url;
+      $this->context_route = array();
+      foreach(array_keys($this->routes) as $name)
+      {
+        if(($pos = strpos($name, '.')) === false)
+        {
+          continue;
+        }
+        
+        $this->context_routes[substr($name, $pos + 1)] = $name;
+      }
     }
     
-    return $this->fixGeneratedUrl($url, $absolute);
+    if(!array_key_exists($route_name, $this->context_routes))
+    {
+      
+      return false;
+    }
+    
+    return $this->context_routes[$route_name];
   }
 }
