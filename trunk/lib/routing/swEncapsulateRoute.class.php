@@ -66,6 +66,7 @@ class swEncapsulateRoute extends sfRoute implements Serializable
 
     $url = $this->route->generate($params, $context, true);
 
+    
     $requirements = $this->route->getRequirements();
     
     if ( isset($requirements['sw_host']) && $requirements['sw_host'] != $context['host'])
