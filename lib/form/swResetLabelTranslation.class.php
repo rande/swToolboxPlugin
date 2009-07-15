@@ -61,7 +61,7 @@ class swResetLabelTranslation extends sfCallable
     
     if (!is_callable(self::$callback))
     {
-      return $subject; 
+      return sprintf(self::$mandatory_format, $subject); 
     }
 
     return sprintf(self::$mandatory_format, self::$callback instanceof sfCallable ? self::$callback->call($subject, $parameters, $catalogue) : call_user_func(self::$callback, $subject, $parameters, $catalogue));
