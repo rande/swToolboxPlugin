@@ -117,14 +117,24 @@ class swToolboxFormHelper
    */
   static public function resetFormLabels(sfForm $form, array $options = array())
   {
-    $options['prefix'] = isset($options['prefix']) ? $options['prefix'] : false;
-    $options['catalogue'] = isset($options['catalogue']) ? $options['catalogue'] : false;
-    $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : false;
+    $options['prefix']           = isset($options['prefix']) ? $options['prefix'] : false;
+    $options['catalogue']        = isset($options['catalogue']) ? $options['catalogue'] : false;
+    $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : '%s';
     
     if($options['catalogue'] !== false)
     {
       $form->getWidgetSchema()->getFormFormatter()->setTranslationCatalogue($options['catalogue']);
     }
+    
+    $callable = sfWidgetFormSchemaFormatter::getTranslationCallable();
+
+    if(!$callable instanceof swResetLabelTranslation)
+    {
+      $proxier_callable = new swResetLabelTranslation($callable, $options['mandatory_format']);
+      sfWidgetFormSchemaFormatter::setTranslationCallable($proxier_callable);
+    }
+    
+    $callable = sfWidgetFormSchemaFormatter::getTranslationCallable();
     
     if($options['prefix'] !== false)
     {
@@ -135,15 +145,7 @@ class swToolboxFormHelper
   static private function resetSchemaLabels(sfWidgetFormSchema $widget_schema, sfValidatorSchema $validator_schema, array $options)
   {
     foreach($widget_schema->getFields() as $name => $child_widget_schema)
-    {
-      $format = "%s";
-      if($options['mandatory_format'] && isset($validator_schema[$name]) && $validator_schema[$name]->getOption('required'))
-      {
-        $format = $options['mandatory_format'];
-      }
-      
-      $child_widget_schema->setLabel(sprintf($format, $options['prefix'].$name));
-      
+    {      
       if($child_widget_schema instanceof sfWidgetFormSchema)
       {
         self::resetSchemaLabels($child_widget_schema, $validator_schema[$name], $options);
