@@ -119,7 +119,7 @@ class swToolboxFormHelper
   {
     $options['prefix']           = isset($options['prefix']) ? $options['prefix'] : '';
     $options['catalogue']        = isset($options['catalogue']) ? $options['catalogue'] : false;
-    $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : '%s';
+    $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : sfConfig::get('app_swToolbox_form_mandatory_format','%s');
     
     $callable = sfWidgetFormSchemaFormatter::getTranslationCallable();
 
