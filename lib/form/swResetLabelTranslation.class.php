@@ -31,10 +31,9 @@
 class swResetLabelTranslation extends sfCallable
 {
   static
-    $callback,
-    $mandatory_format;
+    $callback;
     
-  public function __construct($callable, $mandatory_format)
+  public function __construct($callable)
   {
     if($callable instanceof self)
     {
@@ -42,7 +41,6 @@ class swResetLabelTranslation extends sfCallable
     }
     
     self::$callback = $callable;
-    self::$mandatory_format = $mandatory_format;
   }
   
   /**
@@ -58,13 +56,21 @@ class swResetLabelTranslation extends sfCallable
     $subject = $arguments[0];
     $parameters = $arguments[1];
     $catalogue = $arguments[2];
+    $format = "%s";
+    
+    if($subject instanceof swFormLabel)
+    {
+      $format = $subject->isRequired() ? $subject->getFormat() : $format;
+      $subject = $subject->getLabel();
+    }
     
     if (!is_callable(self::$callback))
     {
-      return sprintf(self::$mandatory_format, $subject); 
+
+      return sprintf($format, $subject); 
     }
 
-    return sprintf(self::$mandatory_format, self::$callback instanceof sfCallable ? self::$callback->call($subject, $parameters, $catalogue) : call_user_func(self::$callback, $subject, $parameters, $catalogue));
+    return sprintf($format, self::$callback instanceof sfCallable ? self::$callback->call($subject, $parameters, $catalogue) : call_user_func(self::$callback, $subject, $parameters, $catalogue));
   }
   
 }

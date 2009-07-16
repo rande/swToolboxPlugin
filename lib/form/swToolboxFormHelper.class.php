@@ -117,14 +117,9 @@ class swToolboxFormHelper
    */
   static public function resetFormLabels(sfForm $form, array $options = array())
   {
-    $options['prefix']           = isset($options['prefix']) ? $options['prefix'] : false;
+    $options['prefix']           = isset($options['prefix']) ? $options['prefix'] : '';
     $options['catalogue']        = isset($options['catalogue']) ? $options['catalogue'] : false;
     $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : '%s';
-    
-    if($options['catalogue'] !== false)
-    {
-      $form->getWidgetSchema()->getFormFormatter()->setTranslationCatalogue($options['catalogue']);
-    }
     
     $callable = sfWidgetFormSchemaFormatter::getTranslationCallable();
 
@@ -136,16 +131,30 @@ class swToolboxFormHelper
     
     $callable = sfWidgetFormSchemaFormatter::getTranslationCallable();
     
-    if($options['prefix'] !== false)
-    {
-      self::resetSchemaLabels($form->getWidgetSchema(), $form->getValidatorSchema(), $options);
-    }
+    self::resetSchemaLabels($form->getWidgetSchema(), $form->getValidatorSchema(), $options);
   }
   
   static private function resetSchemaLabels(sfWidgetFormSchema $widget_schema, sfValidatorSchema $validator_schema, array $options)
   {
+    if($options['catalogue'] !== false)
+    {
+      $widget_schema->getFormFormatter()->setTranslationCatalogue($options['catalogue']);
+    }
+    
     foreach($widget_schema->getFields() as $name => $child_widget_schema)
-    {      
+    { 
+
+      if(isset($validator_schema[$name]) && $validator_schema[$name]->getOption('required'))
+      {
+        $label = new swFormLabel($options['prefix'].$name, true, $options['mandatory_format']);
+      }
+      else
+      {
+        $label = new swFormLabel($options['prefix'].$name);
+      }
+      
+      $child_widget_schema->setLabel($label);
+      
       if($child_widget_schema instanceof sfWidgetFormSchema)
       {
         self::resetSchemaLabels($child_widget_schema, $validator_schema[$name], $options);
