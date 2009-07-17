@@ -117,9 +117,10 @@ class swToolboxFormHelper
    */
   static public function resetFormLabels(sfForm $form, array $options = array())
   {
-    $options['prefix']           = isset($options['prefix']) ? $options['prefix'] : '';
+    $options['prefix']           = isset($options['prefix']) ? $options['prefix'] : sfConfig::get('app_swToolbox_form_label_prefix', 'label_');;
     $options['catalogue']        = isset($options['catalogue']) ? $options['catalogue'] : false;
-    $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : sfConfig::get('app_swToolbox_form_mandatory_format','%s');
+    $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : sfConfig::get('app_swToolbox_form_mandatory_format', '%s');
+    $options['force_labels']     = isset($options['force_labels']) ? $options['force_labels'] : array();
     
     $callable = sfWidgetFormSchemaFormatter::getTranslationCallable();
 
@@ -143,14 +144,14 @@ class swToolboxFormHelper
     
     foreach($widget_schema->getFields() as $name => $child_widget_schema)
     { 
-
+      $text_label = isset($options['force_labels'][$name]) ? $options['force_labels'][$name] : $options['prefix'].$name;
       if(isset($validator_schema[$name]) && $validator_schema[$name]->getOption('required'))
       {
-        $label = new swFormLabel($options['prefix'].$name, true, $options['mandatory_format']);
+        $label = new swFormLabel($text_label, true, $options['mandatory_format']);
       }
       else
       {
-        $label = new swFormLabel($options['prefix'].$name);
+        $label = new swFormLabel($text_label);
       }
       
       $child_widget_schema->setLabel($label);
