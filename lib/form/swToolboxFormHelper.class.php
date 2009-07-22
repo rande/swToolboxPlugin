@@ -144,7 +144,8 @@ class swToolboxFormHelper
     
     foreach($widget_schema->getFields() as $name => $child_widget_schema)
     { 
-      $text_label = isset($options['force_labels'][$name]) ? $options['force_labels'][$name] : $options['prefix'].$name;
+      $text_label = isset($options['force_labels'][$name]) ? $options['force_labels'][$name] : strtolower($options['prefix'].$name);
+
       if(isset($validator_schema[$name]) && $validator_schema[$name]->getOption('required'))
       {
         $label = new swFormLabel($text_label, true, $options['mandatory_format']);
