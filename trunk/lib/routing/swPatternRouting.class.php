@@ -125,6 +125,12 @@ class swPatternRouting extends sfPatternRouting
       }
     }
     
+    if(!is_array($this->context_routes))
+    {
+      
+      return false;
+    }
+    
     if(!array_key_exists($route_name, $this->context_routes))
     {
       
