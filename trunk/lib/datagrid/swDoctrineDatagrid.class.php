@@ -54,7 +54,7 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
   public function getInvalidQuery()
   {
     $query = $this->getBaseQuery();
-    $query->addWhere('id IS NULL'); // set an impossible query
+    $query->addWhere('1 <> 1'); // set an impossible query
     
     return $query;
   }
