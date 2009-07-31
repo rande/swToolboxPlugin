@@ -127,6 +127,16 @@ abstract class swDatagrid extends sfForm
     return $fields;
   }
   
+  public function getSortBy()
+  {
+    return $this->getValue('sort_by');
+  }
+  
+  public function getSortOrder()
+  {
+    return $this->getValue('sort_order');
+  }
+  
   /**
    * 
    * Get the url for the current sort field
