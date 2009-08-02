@@ -1,4 +1,5 @@
 <?php
+
 /*
  *  $Id$
  *
@@ -27,11 +28,7 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swMenuHandler
+class swMenuSelector
 {
-  public function canBuild(array $menus, sfActionStackEntry $action_entry)
-  {
-    
-    return true;
-  }
+  
 }
