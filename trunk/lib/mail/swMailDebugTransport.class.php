@@ -32,6 +32,11 @@ class swMailDebugTransport extends Zend_Mail_Transport_Abstract
 {
 
   protected $raw_mail;
+
+  public function __construct()
+  {
+
+  }
   
   public function _sendMail()
   {
