@@ -191,9 +191,8 @@ class lime_harness_fork extends lime_harness
       {
         $this->output->echoln("all files has been started, now wait for all child to complete");
 
-        while($this->cpt > 0)
-        {
-            usleep(50000);
+        while(pcntl_wait($status, WNOHANG OR WUNTRACED) > 0) {
+          usleep(5000);
         }
 
         break;

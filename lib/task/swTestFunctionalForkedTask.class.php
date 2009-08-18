@@ -79,8 +79,8 @@ EOF;
     {
       require_once(sfConfig::get('sf_symfony_lib_dir').'/vendor/lime/lime.php');
       require_once(sfConfig::get('sf_plugins_dir').'/swToolboxPlugin/lib/debug/lime_harness_fork.php');
-      
-      $h = new lime_harness_fork(new lime_output_color(), $options['process']);
+
+      $h = new lime_harness_fork(new lime_output_color(), null, $options['process']);
       $h->output_dir = $options['output_dir'];
       $h->base_dir = sfConfig::get('sf_test_dir').'/functional/'.$app;
 
