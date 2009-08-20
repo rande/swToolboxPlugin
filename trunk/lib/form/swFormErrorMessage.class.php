@@ -28,21 +28,20 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swFormLabel extends swFormTranslableElement
+class swFormErrorMessage extends swFormTranslableElement
 {
-  protected
-    $required;
-  
-  public function __construct($label, $catalogue = null, $format = "%s", $required = false )
-  {
-    parent::__construct($label, $catalogue, $format);
 
-    $this->required = $required;
-  }
-  
-  public function isRequired()
+  public function __toString()
   {
-    
-    return $this->required;
+
+    $callable = sfWidgetFormSchemaFormatter::getTranslationCallable();
+
+    if (!is_callable($callable) && !$callable instanceof sfCallable)
+    {
+
+      return sprintf($this->format, $this->label);
+    }
+
+    return sprintf($this->format, $callable instanceof sfCallable ? $callable->call($this->label, null, $this->catalogue) : call_user_func($callback, $this->label, null, $this->catalogue));
   }
 }

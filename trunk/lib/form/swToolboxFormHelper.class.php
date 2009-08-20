@@ -117,11 +117,20 @@ class swToolboxFormHelper
    */
   static public function resetFormLabels(sfForm $form, array $options = array())
   {
-    $options['prefix']           = isset($options['prefix']) ? $options['prefix'] : sfConfig::get('app_swToolbox_form_label_prefix', 'label_');;
-    $options['catalogue']        = isset($options['catalogue']) ? $options['catalogue'] : false;
+
+    // label stuff, original purpose
+    $options['prefix']           = isset($options['prefix']) ? $options['prefix'] : sfConfig::get('app_swToolbox_form_label_prefix', 'label_');
+    $options['catalogue']        = isset($options['catalogue']) ? $options['catalogue'] : sfConfig::get('app_swToolbox_form_catalogue', false);
     $options['mandatory_format'] = isset($options['mandatory_format']) ? $options['mandatory_format'] : sfConfig::get('app_swToolbox_form_mandatory_format', '%s');
     $options['force_labels']     = isset($options['force_labels']) ? $options['force_labels'] : array();
-    
+
+    // error message settings
+    $options['error_message_prefix']    = isset($options['error_message_prefix']) ? $options['error_message_prefix'] : sfConfig::get('app_swToolbox_form_error_message_prefix', null);
+    $options['error_message_catalogue'] = isset($options['error_message_catalogue']) ? $options['error_message_catalogue'] : sfConfig::get('app_swToolbox_form_error_message_catalogue', null);
+    $options['error_message_format']    = isset($options['error_message_format']) ? $options['error_message_format'] : sfConfig::get('app_swToolbox_form_error_message_format', '%s');
+
+
+    // define translation (where the magic runs)
     $callable = sfWidgetFormSchemaFormatter::getTranslationCallable();
 
     if(!$callable instanceof swResetLabelTranslation)
@@ -146,9 +155,10 @@ class swToolboxFormHelper
     { 
       $text_label = isset($options['force_labels'][$name]) ? $options['force_labels'][$name] : strtolower($options['prefix'].$name);
 
+      // i18n label
       if(isset($validator_schema[$name]) && $validator_schema[$name]->getOption('required'))
       {
-        $label = new swFormLabel($text_label, true, $options['mandatory_format']);
+        $label = new swFormLabel($text_label, $options['catalogue'], $options['mandatory_format'], true);
       }
       else
       {
@@ -156,6 +166,20 @@ class swToolboxFormHelper
       }
       
       $child_widget_schema->setLabel($label);
+
+      // i18n error messages
+      $messages = $validator_schema[$name]->getMessages();
+      $validator_schema[$name]->setMessages(array());
+
+      foreach($messages as $error_code => $message)
+      {
+
+        $message = $options['error_message_prefix'].strtolower(str_replace(array(',', "\"", "(", ")", ' ', '.'), array('_', "",  "_", "_",'_',''),$message));
+
+        $form_error_message = new swFormErrorMessage($message, $options['error_message_catalogue'], $options['error_message_format']);
+
+        $validator_schema[$name]->addMessage($error_code, $form_error_message);
+      }
       
       if($child_widget_schema instanceof sfWidgetFormSchema)
       {

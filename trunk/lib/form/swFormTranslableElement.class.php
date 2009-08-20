@@ -28,21 +28,36 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swFormLabel extends swFormTranslableElement
+class swFormTranslableElement
 {
   protected
-    $required;
-  
-  public function __construct($label, $catalogue = null, $format = "%s", $required = false )
-  {
-    parent::__construct($label, $catalogue, $format);
-
-    $this->required = $required;
-  }
-  
-  public function isRequired()
-  {
+    $label,
+    $format,
+    $catalogue;
     
-    return $this->required;
+  public function __construct($label, $catalogue = null, $format = "%s")
+  {
+    $this->label = $label;
+    $this->format = $format;
+    $this->catalogue = $catalogue;
   }
+
+  public function __toString()
+  {
+
+    return $this->label;
+  }
+
+  public function getLabel()
+  {
+
+    return $this->label;
+  }
+
+  public function getFormat()
+  {
+
+    return $this->format;
+  }
+
 }

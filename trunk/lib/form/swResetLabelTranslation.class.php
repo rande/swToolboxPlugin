@@ -53,17 +53,31 @@ class swResetLabelTranslation extends sfCallable
   {
     $arguments = func_get_args();
     
-    $subject = $arguments[0];
+    $subject    = $arguments[0];
     $parameters = $arguments[1];
-    $catalogue = $arguments[2];
-    $format = "%s";
+    $catalogue  = $arguments[2];
+    $format     = "%s";
     
     if($subject instanceof swFormLabel)
     {
-      $format = $subject->isRequired() ? $subject->getFormat() : $format;
+      $format  = $subject->isRequired() ? $subject->getFormat() : $format;
       $subject = $subject->getLabel();
+    } 
+    else if($subject instanceof swFormErrorMessage)
+    {
+      /*
+       * Shame on me ... but there is no other choice ...
+       *
+       * Fabien, if you read me ...
+       */
+      return $subject->__toString();
     }
-    
+
+    if(method_exists($subject, 'getCatalogue') && is_null($subject->getCatalogue()))
+    {
+      $catalogue = $subject->getCatalogue();
+    }
+        
     if (!is_callable(self::$callback))
     {
 
