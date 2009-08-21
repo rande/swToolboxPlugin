@@ -54,22 +54,17 @@ class lime_harness_fork extends lime_harness
 
   public function sig_handler($signo)
   {
-//    $current_pid = posix_getpid();
 
     switch ($signo) {
-
      case SIGHUP:
-//       echo "[$current_pid] SIGHUP received\n";
        $this->cpt--;
 
        break;
      case SIGTERM:
-//       echo "[$current_pid] SIGTERM received\n";
        $this->cpt--;
 
        break;
      case SIGCHLD:
-//       echo "[$current_pid] SIGCHLD received\n";
        $this->cpt--;
        break;
     }
