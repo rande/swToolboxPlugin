@@ -168,19 +168,22 @@ class swToolboxFormHelper
       $child_widget_schema->setLabel($label);
 
       // i18n error messages
-      $messages = $validator_schema[$name]->getMessages();
-      $validator_schema[$name]->setMessages(array());
-
-      foreach($messages as $error_code => $message)
+      if($validator_schema[$name])
       {
+        $messages = $validator_schema[$name]->getMessages();
+        $validator_schema[$name]->setMessages(array());
 
-        $message = $options['error_message_prefix'].strtolower(str_replace(array(',', "\"", "(", ")", ' ', '.'), array('_', "",  "_", "_",'_',''),$message));
+        foreach($messages as $error_code => $message)
+        {
 
-        $form_error_message = new swFormErrorMessage($message, $options['error_message_catalogue'], $options['error_message_format']);
+          $message = $options['error_message_prefix'].strtolower(str_replace(array(',', "\"", "(", ")", ' ', '.'), array('_', "",  "_", "_",'_',''),$message));
 
-        $validator_schema[$name]->addMessage($error_code, $form_error_message);
+          $form_error_message = new swFormErrorMessage($message, $options['error_message_catalogue'], $options['error_message_format']);
+
+          $validator_schema[$name]->addMessage($error_code, $form_error_message);
+        }
       }
-      
+
       if($child_widget_schema instanceof sfWidgetFormSchema)
       {
         self::resetSchemaLabels($child_widget_schema, $validator_schema[$name], $options);
