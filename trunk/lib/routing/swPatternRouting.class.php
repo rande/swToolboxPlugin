@@ -47,7 +47,9 @@ class swPatternRouting extends sfPatternRouting
     if (!is_null($this->cache))
     {
       $cacheKey = 'generate_'.$name.'_'.md5(serialize(array_merge($this->defaultParameters, $params))).'_'.md5(serialize($this->options['context']));
-      if ($this->options['lookup_cache_dedicated_keys'] && $url = $this->cache->get('symfony.routing.data.'.$cacheKey))
+      $url = $url = $this->cache->get('symfony.routing.data.'.$cacheKey);
+      
+      if ($this->options['lookup_cache_dedicated_keys'] && $url)
       {
         
         return strpos($name, '.') ? $url : $this->fixGeneratedUrl($url, $absolute);
