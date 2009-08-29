@@ -42,13 +42,6 @@ class swToolboxPluginConfiguration extends sfPluginConfiguration
     // sendMail option
     $this->dispatcher->connect('component.method_not_found', array('swToolbox', 'componentMethodNotFound'));
     $this->dispatcher->connect('configuration.method_not_found', array('swToolbox', 'configurationMethodNotFound'));
-    
-    // functionnal test debug panel
-    if (sfConfig::get('sf_web_debug'))
-    {
-      
-      $this->dispatcher->connect('debug.web.load_panels', array('swFunctionalUnitTestDebugPanel', 'listenToAddPanelEvent'));
-    }
 
     // Menu Manager
     $this->dispatcher->connect('sw_menu_manager.register_listener', array('swMenuManager', 'listenToModuleMenuHandler'));
