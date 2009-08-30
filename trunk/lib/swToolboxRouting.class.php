@@ -25,11 +25,5 @@ class swToolboxRouting
   {
     $r = $event->getSubject();
 
-    // preprend our routes
-    $r->prependRoute('sw_toolbox_retrieve_dynamic_values', new sfRoute('/sw-toolbox/dynamic-values/*', array(
-      'module' => 'swToolbox', 
-      'action' => 'retrieveDynamicValues',
-    )));
-
   }
 }
