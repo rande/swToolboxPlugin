@@ -27,11 +27,13 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-abstract class baseswBreadcrumb {
+abstract class baseswBreadcrumb
+{
 
   private static $entry = array();
 
-  public static function add($breadcrumb = null, $url = null, $title = null, $image = null) {
+  public static function add($breadcrumb = null, $url = null, $title = null, $image = null)
+  {
     self::$entry[] = array(
       'breadcrumb' => $breadcrumb, 
       'url' => $url, 
@@ -40,15 +42,21 @@ abstract class baseswBreadcrumb {
     );
   }
 
-  public static function get() {
+  public static function get() 
+  {
+
     return self::$entry;
   }
 
-  public static function reset(){
+  public static function reset()
+  {
+
     self::$entry = array();
   }
 
-  public static function clean(){
+  public static function clean()
+  {
+
     self::reset();
   }
 
