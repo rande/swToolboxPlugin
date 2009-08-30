@@ -38,10 +38,6 @@ class swToolboxPluginConfiguration extends sfPluginConfiguration
     {
       $this->dispatcher->connect('routing.load_configuration', array('swToolboxRouting', 'listenToRoutingLoadConfigurationEvent'));
     }
-       
-    // sendMail option
-    $this->dispatcher->connect('component.method_not_found', array('swToolbox', 'componentMethodNotFound'));
-    $this->dispatcher->connect('configuration.method_not_found', array('swToolbox', 'configurationMethodNotFound'));
 
     // Menu Manager
     $this->dispatcher->connect('sw_menu_manager.register_listener', array('swMenuManager', 'listenToModuleMenuHandler'));
