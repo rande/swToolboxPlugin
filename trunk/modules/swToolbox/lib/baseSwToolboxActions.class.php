@@ -74,7 +74,7 @@ class baseSwToolboxActions extends sfActions
     }
     
 
-    if(($param = swToolboxFormHelper::getBindParameter($form->getWidgetSchema()->getNameFormat())) !== null)
+    if(($param = swToolboxFormDynamicHelper::getBindParameter($form->getWidgetSchema()->getNameFormat())) !== null)
     {
       $values = $request->getParameter($param);
     }
@@ -92,7 +92,7 @@ class baseSwToolboxActions extends sfActions
       return sfView::NONE;
     }
 
-    $info = swToolboxFormHelper::getWidgetSchemaFromName($form, $name);   
+    $info = swToolboxFormDynamicHelper::getWidgetSchemaFromName($form, $name);
     
     if(!$info['widgetSchema'])
     {
@@ -102,7 +102,7 @@ class baseSwToolboxActions extends sfActions
     
     $values = $form->getDynamicValues($info['widgetSchema'], $info['field']);
     
-    $json_values = swToolboxFormHelper::generateValuesById($form->getWidgetSchema(), $values);
+    $json_values = swToolboxFormDynamicHelper::generateValuesById($form->getWidgetSchema(), $values);
 
     echo json_encode($json_values);
     

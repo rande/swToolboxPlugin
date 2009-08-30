@@ -29,7 +29,7 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swToolboxFormHelper
+class swToolboxFormDynamicHelper
 {
   /**
    * Helper method to be call inside a form. This is part of the "Dynamic Form Values" form feature
