@@ -32,12 +32,6 @@ class swToolboxPluginConfiguration extends sfPluginConfiguration
         $this->configuration->loadHelpers(array('swToolbox'));
       }
     }
-    
-    // register swToolbox routes
-    if (sfConfig::get('app_swToolbox_routes_register', true) && in_array('swToolbox', sfConfig::get('sf_enabled_modules', array())))
-    {
-      $this->dispatcher->connect('routing.load_configuration', array('swToolboxRouting', 'listenToRoutingLoadConfigurationEvent'));
-    }
 
     // Menu Manager
     $this->dispatcher->connect('sw_menu_manager.register_listener', array('swMenuManager', 'listenToModuleMenuHandler'));
