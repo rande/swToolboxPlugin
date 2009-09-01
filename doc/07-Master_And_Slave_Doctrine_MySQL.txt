@@ -1,0 +1,95 @@
+# Master and Slave Connection with MySQL and Doctrine
+
+
+Warning : this is experimental !
+
+
+## Installation
+
+* Install the swToolboxPlugin
+
+  - via svn 
+
+* Edit your ProjectConfiguration
+
+        [php]
+
+        class ProjectConfiguration extends sfProjectConfiguration
+        {
+          /**
+           *
+           * The setup method register a new event listener
+           *
+           */
+          public function setup()
+          {
+            // ... other configuration stuff....
+
+            $this->dispatcher->connect('context.load_factories', array($this, 'initializeConnections'));
+          }
+
+          /**
+           *
+           * initialize the master, this can be done only at this point
+           * through an event, as the connection information need to be loaded
+           * first.
+           *
+           * This solution allows to have multiple connections with slave
+           *
+           * @param sfEvent $event
+           */
+          public function initializeConnections(sfEvent $event)
+          {
+
+
+            $context          = $event->getSubject();
+            $database_manager = $context->getDatabaseManager();
+            $database         = $database_manager->getDatabase('master');
+
+            if($database instanceof swMasterDoctrineDatabase)
+            {
+              $database->initializeSlave($database_manager);
+            }
+          }
+        }
+
+* Edit your databases.yml
+
+        [yml]
+        all:
+
+          slave_1:
+            class: sfDoctrineDatabase
+            param:
+              dsn: 'mysql:host=slave_host_1;dbname=mydatabase;charset=utf-8'
+              username: readonly_user
+              password: readonly_password
+
+          slave_2:
+            class: sfDoctrineDatabase
+            param:
+            class: sfDoctrineDatabase
+            param:
+              dsn: 'mysql:host=slave_host_2;dbname=mydatabase;charset=utf-8'
+              username: readonly_user
+              password: readonly_password
+
+          master:
+            class: swMasterDoctrineDatabase  # this class select the slave
+            param:
+              dsn: 'mysql:host=master_host;dbname=mydatabase;charset=utf-8'
+              username: root
+              password: 7xBgR
+              slaves:       # define the slave's connection name
+                - slave_1
+                - slave_2
+
+
+  Please make sure the master connection is the last one. As doctrine will take this
+  connection as the default one.
+
+  The slaves name must be the connection names ...
+
+* Clear your cache
+
+        ./symfony cc
