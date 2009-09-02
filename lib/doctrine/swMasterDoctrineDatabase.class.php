@@ -36,7 +36,7 @@ class swMasterDoctrineDatabase extends sfDoctrineDatabase
   public function getSlaveNames()
   {
 
-    return $this->getParameter('slaves', array());
+    return $this->getParameter('slaves', array(1));
   }
 
   public function initializeSlave(sfDatabaseManager $database_manager)
@@ -54,8 +54,6 @@ class swMasterDoctrineDatabase extends sfDoctrineDatabase
       {
         sfContext::getInstance()->getLogger()->log('{swMasterDoctrine} select slave connection : '.$slave_name);
       }
-
-
     }
     catch(sfDatabaseException $e)
     {
