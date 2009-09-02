@@ -344,7 +344,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 
         if (sfContext::hasInstance())
         {
-          sfContext::getInstance()->getLogger()->log('{swMasterDoctrine} use '.$this->slave->getName().' for the query : '.$query);
+          // sfContext::getInstance()->getLogger()->log('{swMasterDoctrine} use '.$this->slave->getName().' for the query : '.$query);
         }
 
         return $this->slave->getDbh();
@@ -352,7 +352,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 
       if (sfContext::hasInstance())
       {
-        sfContext::getInstance()->getLogger()->log('{swMasterDoctrine} use '.$this->getName().' for the query : '.$query);
+        // sfContext::getInstance()->getLogger()->log('{swMasterDoctrine} use '.$this->getName().' for the query : '.$query);
       }
 
       return $this->dbh;
