@@ -27,6 +27,7 @@
  * @author     Thomas Rabaix <thomas.rabaix@soleoweb.com>
  * @version    SVN: $Id$
  */
-class swBreadcrumb extends baseswBreadcrumb {
+class swBreadcrumb extends baseswBreadcrumb
+{
 
 }
