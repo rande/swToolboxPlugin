@@ -66,7 +66,15 @@ class swMasterDoctrineDatabase extends sfDoctrineDatabase
       }
     }
 
-     
-    $this->getDoctrineConnection()->setSlave($connection);
+
+    if(method_exists($this->getDoctrineConnection(), 'setSlave'))
+    {
+      $this->getDoctrineConnection()->setSlave($connection);
+    }
+    else
+    {
+      throw new sfExeception('You must enable the Doctrine_Connection_Mysql.class.php from the swToolboxPluging, see doc/07-Master_And_Slave_Doctrine_MySQL.txt');
+    }
+    
   }
 }

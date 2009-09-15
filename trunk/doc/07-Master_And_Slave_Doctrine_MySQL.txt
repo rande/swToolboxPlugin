@@ -79,7 +79,7 @@ Warning : this is experimental !
             param:
               dsn: 'mysql:host=master_host;dbname=mydatabase;charset=utf-8'
               username: root
-              password: 7xBgR
+              password: password
               slaves:       # define the slave's connection name
                 - slave_1
                 - slave_2
@@ -89,6 +89,15 @@ Warning : this is experimental !
   connection as the default one.
 
   The slaves name must be the connection names ...
+
+* Change class name
+  
+  The class is a prototype, so it is not enabled by default. To enable the class
+  you must update the class name:
+
+    * open the Doctrine_Connection_Mysql.class.php file from the swToolboxPlugin/lib/doctrine folder
+    * remove "_disable" from the end of the class name definition.
+    * you can also copy and rename the class name
 
 * Clear your cache
 
