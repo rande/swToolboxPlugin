@@ -73,7 +73,7 @@ class swMasterDoctrineDatabase extends sfDoctrineDatabase
     }
     else
     {
-      throw new sfExeception('You must enable the Doctrine_Connection_Mysql.class.php from the swToolboxPluging, see doc/07-Master_And_Slave_Doctrine_MySQL.txt');
+      throw new sfException('You must enable the Doctrine_Connection_Mysql.class.php from the swToolboxPluging, see doc/07-Master_And_Slave_Doctrine_MySQL.txt');
     }
     
   }
