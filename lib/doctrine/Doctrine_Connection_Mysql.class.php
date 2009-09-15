@@ -1,16 +1,47 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the LGPL. For more information, see
+ * <http://www.phpdoctrine.org>.
+ *
+ * Some portions of this code has been adapted from Doctrine Project libraries
+ * to make it works with Master/Slave connections.
+ *
  */
+
 
 /**
- * Description of Doctrine_Connection_Mysqlclass
  *
- * @author thomas
+ * WARNING : THIS IS A PROTOTYPE, USE IT AT YOUR OWN RISK
+ *
+ * This solution guess the connection depends on the query provided.
+ *
+ * If the query failed on the slave then :
+ *  - the query is executed a second time on the master.
+ *  - $slave_out_of_sync is set to true so all others queries will be executed
+ *    on the master. (The code assume error = out of sync, which of course
+ *    is not always the case)
+ *
+ * The code is also compatible with the original Doctrine_Connection_Mysql class
+ * from the Doctrine Project
+ *
+ * @author Thomas Rabaix <thomas.rabaix@soleoweb.com>
+ *
  */
-
-class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
+class Doctrine_Connection_Mysql_disabled extends Doctrine_Connection_Common
 {
     /**
      * @var string $driverName                  the name of this connection driver
@@ -19,7 +50,8 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 
     protected 
       $slave = null,
-      $transaction_cpt = null;
+      $transaction_cpt = null,
+      $slave_out_of_sync = false;
       
     /**
      * the constructor
@@ -208,18 +240,46 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
 
         try {
             if ( ! empty($params)) {
-                $stmt = $this->prepare($query);
-                $stmt->execute($params);
 
+                try
+                {
+                  $stmt = $this->prepare($query);
+                  $stmt->execute($params);
+                }
+                catch(Exception $e)
+                {
+                  // add error occur try to replay the query
+                  // at the master level. Try to solve INSERT error when slave
+                  // are not synced
+                  // do not resolve issue with out sync UPDATE
+                  
+                  $this->slave_out_of_sync = true;
+
+                  $stmt = $this->prepare($query, true);
+                  $stmt->execute($params);
+                }
+                
                 return $stmt->rowCount();
             } else {
                 $event = new Doctrine_Event($this, Doctrine_Event::CONN_EXEC, $query, $params);
 
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preExec($event);
                 if ( ! $event->skipOperation) {
-                    $count = $this
-                      ->getDbhFromQuery($query)
-                      ->exec($query);
+                    try
+                    {
+                      $dbh = $this->getDbhFromQuery($query);
+                      $count = $dbh->exec($query);
+                    }
+                    catch(Exception $e)
+                    {
+                      // add error occur try to replay the query
+                      // at the master level. Try to solve INSERT error when slave
+                      // are not synced
+                      // do not resolve issue with out sync UPDATE
+                      $this->slave_out_of_sync = true;
+                      
+                      $count = $this->dbh->exec($query);
+                    }
 
                     $this->_count++;
                 }
@@ -244,22 +304,51 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
     public function execute($query, array $params = array())
     {
         $this->connect();
-
+        
         try {
             if ( ! empty($params)) {
-                $stmt = $this->prepare($query);
-                $stmt->execute($params);
+                
 
+                try
+                {
+                  $stmt = $this->prepare($query);
+                  $stmt->execute($params);
+                }
+                catch(Exception $e)
+                {
+                  // add error occur try to replay the query
+                  // at the master level. Try to solve INSERT error when slave
+                  // are not synced
+                  // do not resolve issue with out sync UPDATE
+                  $this->slave_out_of_sync = true;
+                  
+                  $stmt = $this->prepare($query, true);
+                  $stmt->execute($params);
+                }
+                
                 return $stmt;
             } else {
+
                 $event = new Doctrine_Event($this, Doctrine_Event::CONN_QUERY, $query, $params);
 
                 $this->getAttribute(Doctrine::ATTR_LISTENER)->preQuery($event);
 
                 if ( ! $event->skipOperation) {
-                    $stmt = $this
-                      ->getDbhFromQuery($query)
-                      ->query($query);
+                    try
+                    {
+                      $dbh = $this->getDbhFromQuery($query);
+                      $stmt = $dbh->query($query);
+                    }
+                    catch(Exception $e)
+                    {
+                      // add error occur try to replay the query
+                      // at the master level. Try to solve INSERT error when slave
+                      // are not synced
+                      // do not resolve issue with out sync UPDATE
+                      $this->slave_out_of_sync = true;
+                      
+                      $stmt = $this->dbh->query($query);
+                    }
                       
                     $this->_count++;
                 }
@@ -280,7 +369,7 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
      *
      * @param string $statement
      */
-    public function prepare($statement)
+    public function prepare($statement, $force_master = false)
     {
         $this->connect();
 
@@ -292,9 +381,8 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
             $stmt = false;
 
             if ( ! $event->skipOperation) {
-                $stmt = $this
-                  ->getDbhFromStatement($statement)
-                  ->prepare($statement);
+                $dbh  = $force_master || $this->slave_out_of_sync ? $this->dbh : $this->getDbhFromStatement($statement);
+                $stmt = $dbh->prepare($statement);
             }
 
             $this->getAttribute(Doctrine::ATTR_LISTENER)->postPrepare($event);
@@ -339,20 +427,10 @@ class Doctrine_Connection_Mysql extends Doctrine_Connection_Common
     public function getDbhByType($type, $query = '')
     {
       
-      if($type == 'slave' && $this->slave && $this->transaction_cpt == 0)
+      if($type == 'slave' && $this->slave && !$this->slave_out_of_sync && $this->transaction_cpt == 0)
       {
-
-        if (sfContext::hasInstance())
-        {
-          // sfContext::getInstance()->getLogger()->log('{swMasterDoctrine} use '.$this->slave->getName().' for the query : '.$query);
-        }
 
         return $this->slave->getDbh();
-      }
-
-      if (sfContext::hasInstance())
-      {
-        // sfContext::getInstance()->getLogger()->log('{swMasterDoctrine} use '.$this->getName().' for the query : '.$query);
       }
 
       return $this->dbh;
