@@ -2,10 +2,6 @@ For now, there is no full documentation. However you can find some information h
 
 * [swBreadcrumb](http://rabaix.net/en/articles/2009/05/16/working-with-symfony-plugins-breadcrumb "Working with symfony plugins breadcrumb") : Working with symfony plugins breadcrumb
 
-* [swToolboxDynamicFormHelper](http://rabaix.net/en/articles/2009/02/23/let-s-be-more-dynamic-with-sf-form "Let's be more dynamic with sfForm") :
-Let's be more dynamic with sfForm (Ajax)
-
-
 # swToolboxHelper
 
 ## sw_t($title)
