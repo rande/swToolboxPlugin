@@ -32,8 +32,5 @@ class swToolboxPluginConfiguration extends sfPluginConfiguration
         $this->configuration->loadHelpers(array('swToolbox'));
       }
     }
-
-    // Menu Manager
-    $this->dispatcher->connect('sw_menu_manager.register_listener', array('swMenuManager', 'listenToModuleMenuHandler'));
   }
 }
