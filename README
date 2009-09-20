@@ -1,6 +1,18 @@
-For now, there is no full documentation. However you can find some information here
+# Information
 
-* [swBreadcrumb](http://rabaix.net/en/articles/2009/05/16/working-with-symfony-plugins-breadcrumb "Working with symfony plugins breadcrumb") : Working with symfony plugins breadcrumb
+The plugin have been splitted into many plugins :
+
+- [swCrossLinkApplicationPlugin](http://www.symfony-project.org/plugins/swCrossLinkApplicationPlugin) : Add cross application link to your project.
+- [swFormExtraPlugin](http://www.symfony-project.org/plugins/swFormExtraPlugin) : Add more widgets to sfForm framework
+- [swFunctionalTestGenerationPlugin](http://www.symfony-project.org/plugins/swFunctionalTestGenerationPlugin) : Add functional test generation to the web debug toolbar
+- [swZendMailPlugin](http://www.symfony-project.org/plugins/swZendMailPlugin) : Restore old symfony (sf1.0) sendMail feature.
+- [swFormDynamicPlugin](http://www.symfony-project.org/plugins/swFormDynamicPlugin) (alpha) : Add ajax feature to the sfForm framework
+- [swBaseApplicationPlugin](http://www.symfony-project.org/plugins/swBaseApplicationPlugin) (alpha) : Template and menu management for building application (backend or others)
+
+
+# swBreadcrumb
+
+  Please read [Working with symfony plugins breadcrumb](http://rabaix.net/en/articles/2009/05/16/working-with-symfony-plugins-breadcrumb "Working with symfony plugins breadcrumb")
 
 # swToolboxHelper
 
