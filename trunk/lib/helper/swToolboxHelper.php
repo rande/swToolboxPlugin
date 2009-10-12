@@ -286,7 +286,6 @@ function sw_google_analytics($version = 'ga')
     }
   }
 
-  var_dump($html);
   return $html;
 }
 
