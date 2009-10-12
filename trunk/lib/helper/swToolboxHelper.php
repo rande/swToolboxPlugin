@@ -188,8 +188,10 @@ function sw_get_api_loader_config()
   if(is_null($config))
   {
     $config = sfConfig::get('app_swToolbox_api_loader');
+    
     if($config == null)
     {
+
       throw new RuntimeException('app_swToolbox_api_loader is null');
     }
 
@@ -197,6 +199,19 @@ function sw_get_api_loader_config()
 
     if(!array_key_exists($host, $config))
     {
+
+      // try with ereg
+      foreach($config as $ereg_host => $config_host)
+      {
+        $ereg_host = '/^'.str_replace(array('*', '.'), array('([a-z0-9]*)', '\.'), $ereg_host).'$/';
+
+        if(preg_match($ereg_host, $host))
+        {
+          
+          return $config_host;
+        }
+      }
+
       throw new RuntimeException('no configuration set for the current host');
     }
    
@@ -270,7 +285,8 @@ function sw_google_analytics($version = 'ga')
       $html .= sprintf('<script type="text/javascript">var pageTracker = _gat._getTracker("%s"); pageTracker._trackPageview();</script>', $key);
     }
   }
-  
+
+  var_dump($html);
   return $html;
 }
 
