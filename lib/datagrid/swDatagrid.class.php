@@ -37,8 +37,9 @@ abstract class swDatagrid extends sfForm
   protected 
     $pager,
     $filters = array(),
-    $schema_format_name = 'filters';
-  
+    $schema_format_name = 'filters',
+    $cached_results = false
+  ;
   
   /**
    * @see sfFrom
@@ -433,8 +434,18 @@ abstract class swDatagrid extends sfForm
   // PAGER PROXY METHODS
   public function getResults()
   {
+    if($this->cached_results == false)
+    {
+      $this->cached_results =  $this->pager->getResults();
+    }
     
-    return $this->pager->getResults();
+    return $this->cached_results;
+  }
+
+  public function resetCachedResults()
+  {
+    
+     $this->cached_results = false;
   }
 
   public function haveToPaginate()
