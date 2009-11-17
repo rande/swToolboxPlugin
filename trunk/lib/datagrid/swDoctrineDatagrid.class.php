@@ -41,7 +41,8 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
    * @param $query
    * @return query
    */
-  function buildQuery(Doctrine_Query $query) {
+  function buildQuery(Doctrine_Query $query) 
+  {
 
     return $query;
   }
