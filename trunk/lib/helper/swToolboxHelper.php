@@ -354,3 +354,81 @@ function sw_user_context_var($varname)
   
   return isset($vars[$varname]) ? $vars[$varname] : null;
 }
+
+/**
+ * Alternative function to include_partial which try to avoid creating
+ * sfPartialView object
+ *
+ * @param string $templateName
+ * @param array $vars
+ */
+function sw_include_partial($templateName, array $vars = array())
+{
+  static $cache;
+  
+  if($cache == null)
+  {
+    $cache = array();
+  }
+  
+  $context = sfContext::getInstance();
+  $request = $context->getRequest();
+
+  // partial is in another module?
+  if (false !== $sep = strpos($templateName, '/'))
+  {
+    $moduleName   = substr($templateName, 0, $sep);
+    $templateName = substr($templateName, $sep + 1);
+  }
+  else
+  {
+    $moduleName = $context->getActionStack()->getLastEntry()->getModuleName();
+  }
+  $actionName = '_'.$templateName;
+
+  $format = $request->getRequestFormat();
+  
+  if($format != 'html' || $format != null)
+  {
+    $actionName .= '.'.$format;
+  }
+
+  $actionName = $actionName.'php';
+  
+  $key = $moduleName.'::'.$actionName;
+  if(!isset($cache[$key]))
+  {
+    if ('global' == $moduleName)
+    {
+      $directory = $context->getConfiguration()->getDecoratorDir($actionName);
+    }
+    else
+    {
+      $directory = $context->getConfiguration()->getTemplateDir($moduleName, $actionName);
+    }
+
+    $cache[$key] = $directory;
+  }
+
+  $directory = $cache[$key];
+
+  $vars['sf_user'] = $context->getUser();
+  $vars['sf_request'] = $context->getRequest();
+  $vars['sf_response'] = $context->getResponse();
+
+  sw_include_file($directory.'/'.$actionName, $vars);
+}
+
+/**
+ * include a file with provided variables
+ *
+ * @param string $file path the file
+ * @param array $vars
+ */
+function sw_include_file($file, array $vars = array())
+{
+
+  extract($vars);
+
+  require($file);
+}
