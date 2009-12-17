@@ -37,7 +37,17 @@ The plugin have been splitted into many plugins :
               google_map_version: 2.x
               google_map_url: http://maps.google.com/maps
               google_analytics: [ UA-KEY-ONE, UA-KEY-TWO]
-  
+
+  * include google analytics to your web page, edit the layout.php file
+
+        [php]
+        <?php echo sw_google_analytics('aga') ?>
+
+    argument values :
+      * `urchin` : orginal urchin tracker
+      * `ga` : new version of Google Analytics Tracking Code (late 2007)
+      * `aga` : load Google Analytics Asynchronous Tracking Code (late 2009)
+
 
 # swUserContextCacheFilter
 

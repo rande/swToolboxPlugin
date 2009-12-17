@@ -272,18 +272,35 @@ function sw_google_analytics($version = 'ga')
       $html .= sprintf('<script type="text/javascript">_uacct = "%s"; urchinTracker();</script>', $key);
     }
   }
-  
-  if($version == 'ga')
+  else if($version == 'ga')
   {
     $html .= '<script type="text/javascript">';
-    $html .= 'var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");';
-    $html .= 'document.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));';
+    $html .= '  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");';
+    $html .= '  document.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));';
     $html .= '</script>';
     
     foreach($keys as $key)
     {
       $html .= sprintf('<script type="text/javascript">var pageTracker = _gat._getTracker("%s"); pageTracker._trackPageview();</script>', $key);
     }
+  }
+  else if($version == 'aga') // Asynchronous Tracking
+  {
+    $html .= '<script type="text/javascript">';
+    $html .= '  var _gaq = _gaq || [];';
+
+    foreach($keys as $pos => $key)
+    {
+      $html .= sprintf('  _gaq.push([\'%s_setAccount\', \'%s\']);', $pos == 0 ? '' : 't'.($pos + 1).'.', $key);
+      $html .= sprintf('  _gaq.push([\'%s_trackPageview\']);',      $pos == 0 ? '' : 't'.($pos + 1).'.');
+    }
+    
+    $html .= '  (function() {';
+    $html .= '    var ga = document.createElement(\'script\'); ga.type = \'text/javascript\'; ga.async = true;';
+    $html .= '    ga.src = (\'https:\' == document.location.protocol ? \'https://ssl\' : \'http://www\') + \'.google-analytics.com/ga.js\';';
+    $html .= '    (document.getElementsByTagName(\'head\')[0] || document.getElementsByTagName(\'body\')[0]).appendChild(ga);';
+    $html .= '  })();';
+    $html .= '</script>';
   }
 
   return $html;
