@@ -34,6 +34,9 @@
  */
 abstract class swDoctrineDatagrid extends swModelDatagrid
 {
+
+  protected
+    $query = null;
   
     /**
    * build the query that will be handle by the pager
@@ -69,8 +72,13 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
   
   public function getQuery()
   {
+
+    if(!$this->query)
+    {
+      $this->query = $this->isValid() ? $this->buildQuery($this->getBaseQuery()) : $this->getInvalidQuery();
+    }
     
-    return $this->isValid() ? $this->buildQuery($this->getBaseQuery()) : $this->getInvalidQuery();
+    return $this->query;
   }
   
   public function preparePager()
@@ -78,7 +86,7 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
     $page  = $this->getOption('page');
     $query = $this->getQuery();
     $per_page = $this->getOption('per_page', 25);
-    
+
     $this->pager = new sfDoctrinePager($this->getModelName());
     $this->pager->setPage($page);
     $this->pager->setQuery($query);
