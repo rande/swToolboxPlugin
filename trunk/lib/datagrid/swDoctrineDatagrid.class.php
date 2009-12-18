@@ -78,7 +78,7 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
       $this->query = $this->isValid() ? $this->buildQuery($this->getBaseQuery()) : $this->getInvalidQuery();
     }
     
-    return $this->query;
+    return clone $this->query;
   }
   
   public function preparePager()
