@@ -43,87 +43,92 @@ class swUserContextCacheFilter extends sfCacheFilter
 
     $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(
       'swUserContextCacheFilter : starting filter'
+    )));
+    
+    if(!$config)
+    {
+      $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(
+      'swUserContextCacheFilter : config not defined'
       )));
 
-      if(!$config)
+      return;
+    }
+
+    $actionInstance = $this->context->getController()->getActionStack()->getLastEntry()->getActionInstance();
+
+    $module = $actionInstance->getModuleName();
+    $action = $actionInstance->getActionName();
+
+    $key = $module.'::'.$action;
+
+    $modules = isset($config['modules']) ? $config['modules'] : null;
+
+    // set action variables
+    if($modules && !array_key_exists($key, $modules))
+    {
+      $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(
+      'swUserContextCacheFilter : not modules key defined : '.$key
+      )));
+
+      return;
+    }
+    else
+    {
+      $action .= '_UserContext';
+
+      if($this->context->getController()->actionExists($module, $action))
       {
-        $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(
-        'swUserContextCacheFilter : config not defined'
-        )));
+        $action = $this->context->getController()->getAction($module, $action);
+        $action->execute($this->request);
 
-        return;
-      }
+        $options = isset($module[$key]['options']) ? $module[$key]['options'] : array();
 
-      $actionInstance = $this->context->getController()->getActionStack()->getLastEntry()->getActionInstance();
-
-      $module = $actionInstance->getModuleName();
-      $action = $actionInstance->getActionName();
-
-      $key = $module.'::'.$action;
-
-      $modules = isset($config['modules']) ? $config['modules'] : null;
-
-      // set action variables
-      if($modules && !array_key_exists($key, $modules))
-      {
-        $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(
-        'swUserContextCacheFilter : not modules key defined : '.$key
-        )));
-
-        return;
-      }
-      else
-      {
-        $action .= '_UserContext';
-
-        if($this->context->getController()->actionExists($module, $action))
-        {
-          $action = $this->context->getController()->getAction($module, $action);
-          $action->execute($this->request);
-
-          $options = isset($module[$key]['options']) ? $module[$key]['options'] : array();
-
-
-          $this->executePolicy(
+        $this->executePolicy(
           isset($modules[$key]['policy']) ? $modules[$key]['policy'] : 'replace',
           $action->getVarHolder()->getAll(),
           $options
-          );
-        }
-        else
-        {
-          $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(
-          'swUserContextCacheFilter : '.$action.' does not exists'
-          )));
-
-        }
+        );
       }
-
-      // set global variables
-      $common = isset($config['common']) ? $config['common'] : null;
-
-      if(!$common || !isset($common['callback']))
+      else
       {
-
         $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(
-        'swUserContextCacheFilter : no callback information defined'
+        'swUserContextCacheFilter : '.$action.' does not exists'
         )));
 
-        return;
       }
+    }
 
-      $options = isset($common['options']) ? $common['options'] : array();
-      $this->executePolicy(
+    // set global variables
+    $common = isset($config['common']) ? $config['common'] : null;
+
+    if(!$common || !isset($common['callback']))
+    {
+
+      $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array(
+        'swUserContextCacheFilter : no callback information defined'
+      )));
+
+      return;
+    }
+
+    $options = isset($common['options']) ? $common['options'] : array();
+    $this->executePolicy(
       isset($common['policy']) ? $common['policy'] : 'replace',
       call_user_func($common['callback'], $this->context),
       $options
-      );
+    );
 
   }
 
   public function executePolicy($policy = 'replace', $vars = array(), $options = array())
   {
-    //$this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('swUserContextCacheFilter : execute policy : '.$policy.' with vars : '.print_r($vars, 1))));
+    $debug = array();
+    foreach($vars as $name => $value)
+    {
+      $debug[] = '   '.$name .' => ' . $value;
+    }
+    
+    $this->context->getEventDispatcher()->notify(new sfEvent($this, 'application.log', array('swUserContextCacheFilter : execute policy : '.$policy.' with vars : ') + $debug));
 
     $content = $this->context->getResponse()->getContent();
 
@@ -146,6 +151,7 @@ class swUserContextCacheFilter extends sfCacheFilter
 
   public function runReplacePolicy($content, $vars, $options)
   {
+  
     $replace_vars = array();
     foreach($vars as $name => $value)
     {
