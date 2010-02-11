@@ -64,12 +64,22 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
   }
   
   
+  /**
+   * return the base query
+   *
+   * @return Doctrine_Query
+   */
   public function getBaseQuery()
   {
     
     return Doctrine::getTable($this->getModelName())->createQuery();
   }
   
+  /**
+   * return the final query used by the pager
+   *
+   * @return Doctrine_Query
+   */
   public function getQuery()
   {
 
@@ -81,17 +91,36 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
     return clone $this->query;
   }
   
+  /**
+   * prepare the pager once everything is setup
+   */
   public function preparePager()
   {
-    $page  = $this->getOption('page');
-    $query = $this->getQuery();
+    $page     = $this->getOption('page');
     $per_page = $this->getOption('per_page', 25);
+    $query    = $this->getQuery();
+    $class    = $this->getOption('pager_class', 'sfDoctrinePager'); // allow to pass custom class
 
-    $this->pager = new sfDoctrinePager($this->getModelName());
+    // define the hydration mode
+    $query->setHydrationMode($this->getOption('hydration_mode', Doctrine::HYDRATE_RECORD));
+    
+    $this->pager = new $class($this->getModelName());
     $this->pager->setPage($page);
     $this->pager->setQuery($query);
     $this->pager->setMaxPerPage($per_page);
     $this->pager->init();
   }
 
+  // PAGER PROXY METHODS
+  public function gestResults()
+  {
+    if($this->cached_results == false)
+    {
+      $args = func_num_args() == 0 ? array($this->getOption('hydration_mode', Doctrine::HYDRATE_RECORD)) : func_get_args();
+      
+      $this->cached_results = call_user_func_array(array($this->pager, 'getResults'), $args);
+    }
+    
+    return $this->cached_results;
+  }
 }
