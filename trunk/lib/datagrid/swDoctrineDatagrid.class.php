@@ -112,7 +112,7 @@ abstract class swDoctrineDatagrid extends swModelDatagrid
   }
 
   // PAGER PROXY METHODS
-  public function gestResults()
+  public function getResults()
   {
     if($this->cached_results == false)
     {
