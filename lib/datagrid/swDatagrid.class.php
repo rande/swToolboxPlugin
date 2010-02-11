@@ -48,14 +48,14 @@ abstract class swDatagrid extends sfForm
   public function __construct($params = array(), $options = array(), $CSRFSecret = null)
   {
     // validator options
-    $options['allow_extra_fields'] = isset($options['allow_extra_fields']) ? $options['allow_extra_fields'] : true;
+    $options['allow_extra_fields']  = isset($options['allow_extra_fields']) ? $options['allow_extra_fields'] : true;
     $options['filter_extra_fields'] = isset($options['filter_extra_fields']) ? $options['filter_extra_fields'] : false;
-    $options['disabled_init'] = isset($options['disabled_init']) ? $options['disabled_init'] : false;
+    $options['disabled_init']       = isset($options['disabled_init']) ? $options['disabled_init'] : false;
     
     parent::__construct(array(), $options, $CSRFSecret);
 
     // init sort features
-    $params['sort_by'] = isset($params['sort_by']) ? $params['sort_by'] : null;
+    $params['sort_by']    = isset($params['sort_by']) ? $params['sort_by'] : null;
     $params['sort_order'] = isset($params['sort_order']) ? $params['sort_order'] : null;
    
     // init values
@@ -436,7 +436,9 @@ abstract class swDatagrid extends sfForm
   {
     if($this->cached_results == false)
     {
-      $this->cached_results =  $this->pager->getResults();
+      $args = func_get_args();
+      
+      $this->cached_results = call_user_func_array(array($this->pager, 'getResults'), $args);
     }
     
     return $this->cached_results;
