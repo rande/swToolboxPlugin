@@ -461,10 +461,10 @@ abstract class swDatagrid extends sfForm
     return $this->pager->getPage();
   }
 
-  public function getLinks()
+  public function getLinks($nb_links = 5)
   {
     
-    return $this->pager->getLinks();
+    return $this->pager->getLinks($nb_links);
   }
   
   public function getLastPage()
