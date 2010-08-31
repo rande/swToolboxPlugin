@@ -330,7 +330,7 @@ function sw_get_user_notice()
   return $html;
 }
 
-function sw_user_context_var($varname)
+function sw_user_context_var($varname, $default = null)
 {
   static 
     $config, 
@@ -364,12 +364,12 @@ function sw_user_context_var($varname)
   if(!$common || !isset($common['callback']))
   {
     
-    return;
+    return $default;
   }
   
   $vars = call_user_func($common['callback'], $context);
   
-  return isset($vars[$varname]) ? $vars[$varname] : null;
+  return isset($vars[$varname]) ? $vars[$varname] : $default;
 }
 
 /**
@@ -404,13 +404,13 @@ function sw_include_partial($templateName, array $vars = array())
   $actionName = '_'.$templateName;
 
   $format = $request->getRequestFormat();
-  
-  if($format != 'html' || $format != null)
+
+  if($format != 'html' && $format != null)
   {
     $actionName .= '.'.$format;
   }
 
-  $actionName = $actionName.'php';
+  $actionName = $actionName.'.php';
   
   $key = $moduleName.'::'.$actionName;
   if(!isset($cache[$key]))

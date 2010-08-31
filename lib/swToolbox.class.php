@@ -72,6 +72,6 @@ class swToolbox
   static function convertFileInformation($taintedFiles)
   {
     
-    throw new RuntimeException('Please update the '.get_class($form).' sfForm class. This method is now deprecated, use swFormHelper::convertFileInformation  (swFormExtraPlugin)');
+    throw new RuntimeException('Please update the sfForm class. This method is now deprecated, use swFormHelper::convertFileInformation  (swFormExtraPlugin)');
   }
 }
